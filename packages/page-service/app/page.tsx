@@ -1,24 +1,26 @@
 import { getBrand } from '@/lib/branding';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Home() {
   const brand = getBrand();
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{brand.name}</CardTitle>
-        <CardDescription>Public survey pages, served statelessly.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm text-muted-foreground">
+    <div className="animate-fade-up rounded-2xl border border-border bg-card p-8 shadow-card sm:p-10">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">{brand.name}</p>
+      <h1 className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl">
+        Public survey pages, served statelessly.
+      </h1>
+      <div className="mt-5 space-y-3 text-[1.02rem] leading-relaxed text-muted-foreground">
         <p>
-          This is the survey page-service. Surveys open at a share link of the form{' '}
-          <code className="rounded bg-muted px-1 py-0.5">/s/&lt;project&gt;/&lt;survey&gt;#k=…</code>.
+          Surveys open at a share link of the form{' '}
+          <code className="rounded bg-secondary px-1.5 py-0.5 font-sans text-sm text-foreground">
+            /s/&lt;project&gt;/&lt;survey&gt;#k=…
+          </code>
+          .
         </p>
         <p>
-          It stores nothing: each submission is written directly into the survey owner&rsquo;s own
-          Supabase. Open source &amp; self-hostable.
+          This service stores nothing: each submission is written directly into the survey
+          owner&rsquo;s own Supabase. Open source &amp; self-hostable.
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -2,7 +2,6 @@
 import { use, useEffect, useState } from 'react';
 import { createPublicClient, urlFromRef, fetchPublishedSurvey, type PublicSurvey } from '@data';
 import { SurveyForm } from '@/components/survey-form';
-import { Card, CardContent } from '@/components/ui/card';
 
 type State = 'loading' | 'nokey' | 'notfound' | 'ready';
 
@@ -51,8 +50,8 @@ export default function SurveyPage({ params }: { params: Promise<{ ref: string; 
 
 function Centered({ children }: { children: React.ReactNode }) {
   return (
-    <Card>
-      <CardContent className="py-16 text-center text-muted-foreground">{children}</CardContent>
-    </Card>
+    <div className="animate-fade-up rounded-2xl border border-border bg-card px-8 py-16 text-center text-muted-foreground shadow-card">
+      {children}
+    </div>
   );
 }

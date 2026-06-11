@@ -1,11 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Question, AnswerValue } from '@agentic-survey/schema';
 import { validateSubmission, type ValidationError } from '@data';
 import { QuestionField } from '@/components/question-field';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2 } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 interface Props {
   projectRef: string;
@@ -22,6 +21,11 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
   const [formError, setFormError] = useState<string | null>(null);
 
   const thankYou = survey.config?.thankYou as string | undefined;
+  const answeredCount = useMemo(
+    () => questions.filter((q) => answers[q.id] !== undefined).length,
+    [answers, questions],
+  );
+  const progress = questions.length ? Math.round((answeredCount / questions.length) * 100) : 0;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,6 +36,7 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
     const validation: ValidationError[] = validateSubmission(questions, list);
     if (validation.length) {
       setErrors(Object.fromEntries(validation.map((v) => [v.questionId, v.message])));
+      document.getElementById(validation[0].questionId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
     setErrors({});
@@ -40,12 +45,7 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
       const res = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          ref: projectRef,
-          key: publishableKey,
-          surveyId: survey.id,
-          answers: list,
-        }),
+        body: JSON.stringify({ ref: projectRef, key: publishableKey, surveyId: survey.id, answers: list }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -62,38 +62,74 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
 
   if (done) {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
-          <CheckCircle2 className="h-10 w-10 text-primary" />
-          <p className="text-lg font-medium">{thankYou ?? 'Thanks — your response was recorded.'}</p>
-        </CardContent>
-      </Card>
+      <div className="animate-fade-up rounded-2xl border border-border bg-card px-8 py-16 text-center shadow-card">
+        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+          <Check className="h-7 w-7 text-primary" strokeWidth={2.5} />
+        </div>
+        <h1 className="font-display text-3xl font-medium tracking-tight">
+          {thankYou ?? 'Thank you'}
+        </h1>
+        <p className="mx-auto mt-3 max-w-sm text-muted-foreground">
+          Your response has been recorded.
+        </p>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{survey.title}</CardTitle>
-        {survey.description && <CardDescription>{survey.description}</CardDescription>}
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={onSubmit} className="space-y-8">
-          {questions.map((q) => (
+    <div className="rounded-2xl border border-border bg-card shadow-card">
+      {/* header */}
+      <header className="animate-fade-up space-y-4 px-6 pt-8 sm:px-10 sm:pt-10">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">Survey</p>
+        <h1 className="font-display text-[2rem] font-medium leading-[1.1] tracking-tight sm:text-[2.6rem]">
+          {survey.title}
+        </h1>
+        {survey.description && (
+          <p className="max-w-prose text-[1.05rem] leading-relaxed text-muted-foreground">
+            {survey.description}
+          </p>
+        )}
+        <div className="flex items-center gap-3 pt-2">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+            <div
+              className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="text-xs tabular-nums text-muted-foreground">
+            {answeredCount}/{questions.length}
+          </span>
+        </div>
+      </header>
+
+      <form onSubmit={onSubmit} className="space-y-10 px-6 py-9 sm:px-10 sm:py-10">
+        {questions.map((q, i) => (
+          <div
+            key={q.id}
+            id={q.id}
+            className="animate-fade-up scroll-mt-8"
+            style={{ animationDelay: `${80 + i * 55}ms` }}
+          >
             <QuestionField
-              key={q.id}
               question={q}
+              index={i}
               value={answers[q.id]}
               onChange={(v) => setAnswers((a) => ({ ...a, [q.id]: v }))}
               error={errors[q.id]}
             />
-          ))}
+          </div>
+        ))}
+
+        <div
+          className="animate-fade-up space-y-4 border-t border-border/70 pt-8"
+          style={{ animationDelay: `${120 + questions.length * 55}ms` }}
+        >
           {formError && <p className="text-sm text-destructive">{formError}</p>}
           <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-            {submitting ? 'Submitting…' : 'Submit'}
+            {submitting ? 'Submitting…' : 'Submit response'}
           </Button>
-        </form>
-      </CardContent>
-    </Card>
+        </div>
+      </form>
+    </div>
   );
 }
