@@ -8,8 +8,16 @@
   "bin": {
     "agentic-survey": "src/cli.ts"
   },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node --import tsx src/index.ts",
+    "test": "node --import tsx --env-file-if-exists=../../.env --test src/**/*.test.ts"
+  },
   "dependencies": {
     "@agentic-survey/core": "*",
-    "@agentic-survey/schema": "*"
+    "@agentic-survey/schema": "*",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
   }
 }
