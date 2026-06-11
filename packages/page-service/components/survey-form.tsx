@@ -79,9 +79,9 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
   return (
     <div className="rounded-2xl border border-border bg-card shadow-card">
       {/* header */}
-      <header className="animate-fade-up space-y-4 px-6 pt-8 sm:px-10 sm:pt-10">
+      <header className="animate-fade-up space-y-4 px-[var(--pad-x)] pt-[var(--pad-y)] sm:px-[var(--pad-x-sm)]">
         <p className="kicker text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">Survey</p>
-        <h1 className="font-display text-[2rem] font-medium leading-[1.1] tracking-tight sm:text-[2.6rem]">
+        <h1 className="font-display text-[length:var(--fs-title)] font-medium leading-[1.1] tracking-tight sm:text-[length:var(--fs-title-sm)]">
           {survey.title}
         </h1>
         {survey.description && (
@@ -102,7 +102,10 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
         </div>
       </header>
 
-      <form onSubmit={onSubmit} className="space-y-10 px-6 py-9 sm:px-10 sm:py-10">
+      <form
+        onSubmit={onSubmit}
+        className="flex flex-col gap-[var(--gap-q)] px-[var(--pad-x)] py-[var(--pad-y)] sm:px-[var(--pad-x-sm)]"
+      >
         {questions.map((q, i) => (
           <div
             key={q.id}
@@ -121,7 +124,7 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
         ))}
 
         <div
-          className="animate-fade-up space-y-4 border-t border-border/70 pt-8"
+          className="animate-fade-up space-y-4 border-t border-border/70 pt-2"
           style={{ animationDelay: `${120 + questions.length * 55}ms` }}
         >
           {formError && <p className="text-sm text-destructive">{formError}</p>}

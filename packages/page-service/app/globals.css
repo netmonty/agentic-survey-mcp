@@ -26,33 +26,53 @@
 
     --font-display: var(--font-fraunces);
     --font-sans: var(--font-hanken);
-    --font-mono: var(--font-jbmono);
+    --font-mono: var(--font-geist-mono);
+
+    /* scale */
+    --fs-title: 2rem;
+    --fs-title-sm: 2.6rem;
+    --fs-prompt: 1.25rem;
+    --h-ctl: 3rem;
+    --gap-q: 2.5rem;
+    --pad-x: 1.5rem;
+    --pad-x-sm: 2.5rem;
+    --pad-y: 2.25rem;
   }
 
-  /* ── Theme 2: Charcoal techy — cool charcoal, electric teal, mono accents ── */
+  /* ── Theme 2: Charcoal — monochrome charcoal/white, modern (Geist), compact ── */
   [data-theme='charcoal'] {
     --background: 225 14% 8%;
-    --foreground: 220 16% 90%;
+    --foreground: 220 16% 92%;
     --card: 222 14% 11%;
-    --card-foreground: 220 16% 90%;
-    --primary: 173 74% 50%;
-    --primary-foreground: 224 30% 8%;
+    --card-foreground: 220 16% 92%;
+    --primary: 0 0% 96%;
+    --primary-foreground: 224 16% 9%;
     --secondary: 222 12% 16%;
-    --secondary-foreground: 220 16% 90%;
+    --secondary-foreground: 220 16% 92%;
     --muted: 222 12% 15%;
-    --muted-foreground: 220 10% 58%;
-    --accent: 173 74% 50%;
-    --accent-foreground: 224 30% 8%;
-    --destructive: 0 72% 60%;
-    --destructive-foreground: 224 30% 8%;
-    --border: 222 12% 19%;
-    --input: 222 12% 22%;
-    --ring: 173 74% 50%;
-    --radius: 0.7rem;
+    --muted-foreground: 220 8% 56%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 224 16% 9%;
+    --destructive: 0 70% 62%;
+    --destructive-foreground: 224 16% 9%;
+    --border: 222 11% 20%;
+    --input: 222 11% 24%;
+    --ring: 0 0% 70%;
+    --radius: 0.6rem;
 
-    --font-display: var(--font-sora);
-    --font-sans: var(--font-sora);
-    --font-mono: var(--font-jbmono);
+    --font-display: var(--font-geist-sans);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+
+    /* tighter, smaller scale */
+    --fs-title: 1.5rem;
+    --fs-title-sm: 1.9rem;
+    --fs-prompt: 1.0625rem;
+    --h-ctl: 2.625rem;
+    --gap-q: 1.75rem;
+    --pad-x: 1.25rem;
+    --pad-x-sm: 1.85rem;
+    --pad-y: 1.6rem;
   }
 
   * {
@@ -64,18 +84,17 @@
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
     min-height: 100dvh;
     background-attachment: fixed;
-    /* editorial atmosphere: warm radial glows */
     background-image:
       radial-gradient(60rem 40rem at 50% -8rem, hsl(var(--primary) / 0.1), transparent 60%),
       radial-gradient(40rem 30rem at 100% 0%, hsl(28 60% 70% / 0.08), transparent 55%);
   }
 
-  /* charcoal atmosphere: teal glow + faint technical grid */
+  /* charcoal atmosphere: faint technical grid, no colour glow */
   [data-theme='charcoal'] body {
     background-image:
-      radial-gradient(52rem 36rem at 50% -6rem, hsl(var(--primary) / 0.12), transparent 60%),
-      linear-gradient(hsl(var(--border) / 0.55) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.55) 1px, transparent 1px);
+      radial-gradient(52rem 36rem at 50% -6rem, hsl(0 0% 100% / 0.04), transparent 60%),
+      linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
     background-size: auto, 46px 46px, 46px 46px;
   }
 
@@ -93,7 +112,6 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Per-theme typographic accents */
   .q-num {
     font-family: var(--font-display), Georgia, serif;
   }
@@ -103,6 +121,17 @@
   [data-theme='charcoal'] .kicker {
     font-family: var(--font-mono), ui-monospace, monospace;
     letter-spacing: 0.16em;
+  }
+
+  /* hide native number spinners (custom stepper is used instead) */
+  .no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .no-spinner {
+    -moz-appearance: textfield;
+    appearance: textfield;
   }
 
   @keyframes fade-up {

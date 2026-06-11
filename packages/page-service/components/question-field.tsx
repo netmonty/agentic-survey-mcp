@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectTrigger,
@@ -12,6 +11,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
+import { Minus, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -133,7 +133,7 @@ export function QuestionField({ question, index, value, onChange, error }: Props
                   type="button"
                   onClick={() => onChange({ kind: 'rating', value: n })}
                   className={cn(
-                    'h-12 w-12 rounded-lg border text-[0.95rem] font-medium transition-all duration-200',
+                    'h-[var(--h-ctl)] w-[var(--h-ctl)] rounded-lg border text-[0.95rem] font-medium transition-all duration-200',
                     current === n
                       ? 'border-primary bg-primary text-primary-foreground shadow-sm'
                       : 'border-border bg-card hover:-translate-y-0.5 hover:border-primary/50',
@@ -177,27 +177,58 @@ export function QuestionField({ question, index, value, onChange, error }: Props
         );
       }
 
-      case 'number':
+      case 'number': {
+        const v = value?.kind === 'number' ? value.value : undefined;
+        const step = cfg.step ?? 1;
+        const start = cfg.min ?? 0;
+        const clamp = (n: number) => {
+          if (cfg.min != null && n < cfg.min) return cfg.min;
+          if (cfg.max != null && n > cfg.max) return cfg.max;
+          return n;
+        };
+        const set = (n: number | undefined) =>
+          onChange(n === undefined || Number.isNaN(n) ? undefined : { kind: 'number', value: n });
+        const stepBtn =
+          'grid w-11 shrink-0 place-items-center text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-40 disabled:hover:bg-transparent';
         return (
-          <div className="relative">
-            <Input
+          <div className="flex h-[var(--h-ctl)] w-full max-w-[18rem] items-stretch overflow-hidden rounded-lg border border-input bg-card shadow-sm">
+            <button
+              type="button"
+              aria-label="Decrease"
+              disabled={cfg.min != null && v != null && v <= cfg.min}
+              onClick={() => set(clamp(v === undefined ? start : v - step))}
+              className={cn(stepBtn, 'border-r border-input')}
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <input
               type="number"
+              inputMode="numeric"
               min={cfg.min}
               max={cfg.max}
-              step={cfg.step}
-              className={cfg.unit ? 'pr-16' : undefined}
-              value={value?.kind === 'number' ? String(value.value) : ''}
-              onChange={(e) =>
-                onChange(e.target.value === '' ? undefined : { kind: 'number', value: Number(e.target.value) })
-              }
+              step={step}
+              placeholder="—"
+              className="no-spinner w-full bg-transparent text-center text-[0.95rem] tabular-nums outline-none placeholder:text-muted-foreground"
+              value={v === undefined ? '' : String(v)}
+              onChange={(e) => set(e.target.value === '' ? undefined : clamp(Number(e.target.value)))}
             />
+            <button
+              type="button"
+              aria-label="Increase"
+              disabled={cfg.max != null && v != null && v >= cfg.max}
+              onClick={() => set(clamp(v === undefined ? start : v + step))}
+              className={cn(stepBtn, 'border-l border-input')}
+            >
+              <Plus className="h-4 w-4" />
+            </button>
             {cfg.unit && (
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              <span className="grid shrink-0 place-items-center border-l border-input px-3.5 text-sm text-muted-foreground">
                 {cfg.unit}
               </span>
             )}
           </div>
         );
+      }
     }
   }
 
@@ -207,7 +238,7 @@ export function QuestionField({ question, index, value, onChange, error }: Props
         <span className="q-num mt-1 select-none text-sm tabular-nums text-primary/70">
           {String(index + 1).padStart(2, '0')}
         </span>
-        <span className="font-display text-xl leading-snug text-foreground">
+        <span className="font-display text-[length:var(--fs-prompt)] leading-snug text-foreground">
           {question.prompt}
           {question.required && <span className="text-primary"> *</span>}
         </span>
