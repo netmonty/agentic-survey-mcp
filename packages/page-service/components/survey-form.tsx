@@ -80,7 +80,7 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
     <div className="rounded-2xl border border-border bg-card shadow-card">
       {/* header */}
       <header className="animate-fade-up space-y-4 px-6 pt-8 sm:px-10 sm:pt-10">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">Survey</p>
+        <p className="kicker text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">Survey</p>
         <h1 className="font-display text-[2rem] font-medium leading-[1.1] tracking-tight sm:text-[2.6rem]">
           {survey.title}
         </h1>

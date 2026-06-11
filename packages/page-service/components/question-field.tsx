@@ -204,7 +204,7 @@ export function QuestionField({ question, index, value, onChange, error }: Props
   return (
     <fieldset className="space-y-3.5">
       <legend className="flex gap-3">
-        <span className="mt-1 select-none font-display text-sm tabular-nums text-primary/70">
+        <span className="q-num mt-1 select-none text-sm tabular-nums text-primary/70">
           {String(index + 1).padStart(2, '0')}
         </span>
         <span className="font-display text-xl leading-snug text-foreground">

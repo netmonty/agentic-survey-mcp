@@ -4,7 +4,7 @@ export default function Home() {
   const brand = getBrand();
   return (
     <div className="animate-fade-up rounded-2xl border border-border bg-card p-8 shadow-card sm:p-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">{brand.name}</p>
+      <p className="kicker text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">{brand.name}</p>
       <h1 className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl">
         Public survey pages, served statelessly.
       </h1>

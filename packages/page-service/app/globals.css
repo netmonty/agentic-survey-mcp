@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 @layer base {
+  /* ── Theme 1: Editorial calm (default) — warm paper, burnt-clay ── */
   :root {
-    /* Editorial calm — warm paper, ink, burnt-clay accent */
     --background: 39 44% 96%;
     --foreground: 24 14% 13%;
     --card: 40 56% 99%;
@@ -23,26 +23,36 @@
     --input: 33 24% 82%;
     --ring: 14 74% 46%;
     --radius: 0.85rem;
+
+    --font-display: var(--font-fraunces);
+    --font-sans: var(--font-hanken);
+    --font-mono: var(--font-jbmono);
   }
 
-  .dark {
-    --background: 24 12% 9%;
-    --foreground: 38 30% 92%;
-    --card: 24 12% 12%;
-    --card-foreground: 38 30% 92%;
-    --primary: 16 78% 55%;
-    --primary-foreground: 24 20% 10%;
-    --secondary: 26 10% 18%;
-    --secondary-foreground: 38 30% 92%;
-    --muted: 26 10% 18%;
-    --muted-foreground: 34 14% 64%;
-    --accent: 16 78% 55%;
-    --accent-foreground: 24 20% 10%;
-    --destructive: 4 70% 56%;
-    --destructive-foreground: 24 20% 10%;
-    --border: 28 10% 24%;
-    --input: 28 10% 26%;
-    --ring: 16 78% 55%;
+  /* ── Theme 2: Charcoal techy — cool charcoal, electric teal, mono accents ── */
+  [data-theme='charcoal'] {
+    --background: 225 14% 8%;
+    --foreground: 220 16% 90%;
+    --card: 222 14% 11%;
+    --card-foreground: 220 16% 90%;
+    --primary: 173 74% 50%;
+    --primary-foreground: 224 30% 8%;
+    --secondary: 222 12% 16%;
+    --secondary-foreground: 220 16% 90%;
+    --muted: 222 12% 15%;
+    --muted-foreground: 220 10% 58%;
+    --accent: 173 74% 50%;
+    --accent-foreground: 224 30% 8%;
+    --destructive: 0 72% 60%;
+    --destructive-foreground: 224 30% 8%;
+    --border: 222 12% 19%;
+    --input: 222 12% 22%;
+    --ring: 173 74% 50%;
+    --radius: 0.7rem;
+
+    --font-display: var(--font-sora);
+    --font-sans: var(--font-sora);
+    --font-mono: var(--font-jbmono);
   }
 
   * {
@@ -52,15 +62,25 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-    /* warm radial glow anchored top-centre */
+    min-height: 100dvh;
+    background-attachment: fixed;
+    /* editorial atmosphere: warm radial glows */
     background-image:
       radial-gradient(60rem 40rem at 50% -8rem, hsl(var(--primary) / 0.1), transparent 60%),
       radial-gradient(40rem 30rem at 100% 0%, hsl(28 60% 70% / 0.08), transparent 55%);
-    background-attachment: fixed;
+  }
+
+  /* charcoal atmosphere: teal glow + faint technical grid */
+  [data-theme='charcoal'] body {
+    background-image:
+      radial-gradient(52rem 36rem at 50% -6rem, hsl(var(--primary) / 0.12), transparent 60%),
+      linear-gradient(hsl(var(--border) / 0.55) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.55) 1px, transparent 1px);
+    background-size: auto, 46px 46px, 46px 46px;
   }
 
   ::selection {
-    background: hsl(var(--primary) / 0.18);
+    background: hsl(var(--primary) / 0.22);
   }
 
   h1, h2, h3 {
@@ -69,12 +89,22 @@
 }
 
 @layer utilities {
-  .font-display {
-    font-family: var(--font-display), Georgia, serif;
-  }
   .grain {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
+
+  /* Per-theme typographic accents */
+  .q-num {
+    font-family: var(--font-display), Georgia, serif;
+  }
+  [data-theme='charcoal'] .q-num {
+    font-family: var(--font-mono), ui-monospace, monospace;
+  }
+  [data-theme='charcoal'] .kicker {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    letter-spacing: 0.16em;
+  }
+
   @keyframes fade-up {
     from {
       opacity: 0;
