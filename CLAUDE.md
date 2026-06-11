@@ -124,6 +124,36 @@ via a `next.config` rewrite. Edit it there and redeploy.
    landing footer's personal links so self-hosters get a neutral page (deferred — would
    need server-rendering the landing or a build-time template).
 
+## Security posture (hosted page-service)
+
+The hosted page-service at **mcpsurveys.com** is an **open, ungated, multi-tenant
+renderer**: anyone with their own Supabase + this schema can serve their published
+surveys at `/s/<ref>/<id>#k=<key>` on the domain, no account/permission needed. This
+is by design (stateless self-hostable page), but it means strangers can host
+**plain-text phishing/social-engineering content** under the domain. (Code injection
+is *not* a risk — React escapes all author text, no `dangerouslySetInnerHTML`.) Their
+submissions write to **their own** DB; no risk to your data or keys.
+
+- **Decision (launch posture): open + minimal hardening now**, denylist/reporting later.
+- **Shipped** (`c520397`): `ref` validated against `^[a-z0-9]{20}$` before URL
+  interpolation (closes a server-side SSRF on `/api/submit` + constrains rendering to
+  real Supabase projects); security headers — `X-Frame-Options`/CSP `frame-ancestors`
+  (clickjacking), `nosniff`, `Referrer-Policy` globally, strict CSP + `noindex` on `/s/*`.
+  **Not deployed yet** — needs a prebuilt redeploy; verify with `curl -I https://www.mcpsurveys.com/s/x`.
+- **Still open**: enable Turnstile (set `TURNSTILE_SECRET_KEY` + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+  on Vercel — code already supports it); a ref **denylist** + abuse-report route to pull
+  bad surveys fast; move the in-memory per-IP rate limiter (10/min, resets per serverless
+  instance — weak) to a shared store (Upstash) or rely on Vercel WAF.
+- **If abuse appears**, the fast lever is locking the hosted instance to an allowlist of
+  your own project ref(s) and pushing everyone else to self-host (`init --page-endpoint`).
+
+## npm publish
+
+Packages are publish-ready (`957feb1`): `publishConfig.access=public`, repo/homepage/
+keywords metadata, per-package README + LICENSE, `prepublishOnly: tsc -b`. Publish as
+**netmonty** (owns the `@agentic-survey` org), 2FA-enforced so each needs `--otp`, in
+dependency order: **schema → core → mcp-server**.
+
 ## Gotchas
 
 - `dist/` and `.next/` are gitignored; build with `npm run build` (publishable pkgs) /
