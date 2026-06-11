@@ -1,12 +1,14 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { createPublicClient, urlFromRef, fetchPublishedSurvey, type PublicSurvey } from '@data';
 import { SurveyForm } from '@/components/survey-form';
 import { Card, CardContent } from '@/components/ui/card';
 
 type State = 'loading' | 'nokey' | 'notfound' | 'ready';
 
-export default function SurveyPage({ params }: { params: { ref: string; surveyId: string } }) {
+export default function SurveyPage({ params }: { params: Promise<{ ref: string; surveyId: string }> }) {
+  // Next 16: route params are async; unwrap with React's use().
+  const { ref, surveyId } = use(params);
   const [state, setState] = useState<State>('loading');
   const [data, setData] = useState<PublicSurvey | null>(null);
   const [publishableKey, setPublishableKey] = useState('');
@@ -21,8 +23,8 @@ export default function SurveyPage({ params }: { params: { ref: string; surveyId
       return;
     }
     setPublishableKey(key);
-    const client = createPublicClient(urlFromRef(params.ref), key);
-    fetchPublishedSurvey(client, params.surveyId)
+    const client = createPublicClient(urlFromRef(ref), key);
+    fetchPublishedSurvey(client, surveyId)
       .then((res) => {
         if (!res) {
           setState('notfound');
@@ -32,14 +34,14 @@ export default function SurveyPage({ params }: { params: { ref: string; surveyId
         setState('ready');
       })
       .catch(() => setState('notfound'));
-  }, [params.ref, params.surveyId]);
+  }, [ref, surveyId]);
 
   if (state === 'loading') return <Centered>Loading…</Centered>;
   if (state === 'nokey') return <Centered>This link is missing its access key.</Centered>;
   if (state === 'notfound') return <Centered>Survey not found, or not published.</Centered>;
   return (
     <SurveyForm
-      projectRef={params.ref}
+      projectRef={ref}
       publishableKey={publishableKey}
       survey={data!.survey}
       questions={data!.questions}

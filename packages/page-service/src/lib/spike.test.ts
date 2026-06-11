@@ -1,9 +1,9 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createClient } from '@supabase/supabase-js';
-import { createPublicClient } from './public-client.js';
-import { fetchPublishedSurvey, submitResponse } from './survey.js';
-import { validateSubmission } from './validation.js';
+import { createPublicClient } from './public-client';
+import { fetchPublishedSurvey, submitResponse } from './survey';
+import { validateSubmission } from './validation';
 
 const SB_URL = process.env.SUPABASE_URL;
 const SECRET = process.env.SUPABASE_SECRET_KEY;

@@ -1,5 +1,5 @@
 import type { Question, AnswerValue } from '@agentic-survey/schema';
-import type { PublicClient } from './public-client.js';
+import type { PublicClient } from './public-client';
 
 export interface PublicSurvey {
   survey: { id: string; title: string; description: string | null; config: any };
