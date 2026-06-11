@@ -13,6 +13,11 @@
 -- by the MCP server. The public path (page-service, publishable key / anon role)
 -- is constrained to: read only PUBLISHED surveys + questions, and INSERT
 -- responses/answers — never read responses or drafts.
+--
+-- IMPORTANT (verified in the RLS spike): the anon path has NO select policy on
+-- responses/answers, so it must INSERT *without* RETURNING (Postgres applies
+-- SELECT policies to RETURNING). The page-service therefore generates response
+-- and answer UUIDs client-side and inserts without RETURNING.
 
 -- ---------------------------------------------------------------------------
 -- Tables
@@ -132,15 +137,18 @@ create policy responses_public_insert
     where s.id = responses.survey_id and s.status = 'published'
   ));
 
--- Answers: public can INSERT only, and only attached to a response whose
--- survey is published. No SELECT policy.
+-- Answers: public can INSERT only, validated via the QUESTION's survey being
+-- published. We deliberately DON'T check via responses here: anon has no SELECT
+-- policy on responses, so a responses-based subquery returns nothing and blocks
+-- the insert. The answers.response_id link is enforced by the foreign key, whose
+-- check bypasses RLS. No SELECT policy on answers.
 drop policy if exists answers_public_insert on public.answers;
 create policy answers_public_insert
   on public.answers for insert
   to anon
   with check (exists (
     select 1
-    from public.responses r
-    join public.surveys s on s.id = r.survey_id
-    where r.id = answers.response_id and s.status = 'published'
+    from public.questions q
+    join public.surveys s on s.id = q.survey_id
+    where q.id = answers.question_id and s.status = 'published'
   ));
