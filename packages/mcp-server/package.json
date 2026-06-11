@@ -1,6 +1,6 @@
 {
   "name": "@agentic-survey/mcp-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server (stdio) exposing survey tools over core, plus the agentic-survey CLI.",
   "license": "MIT",
   "author": "Monty Daley <monty@daley.org.nz>",

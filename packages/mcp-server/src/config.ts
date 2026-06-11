@@ -15,7 +15,7 @@ export interface StoredConfig {
   pageEndpoint?: string;
 }
 
-export const DEFAULT_PAGE_ENDPOINT = 'https://agentic-survey-pages.vercel.app';
+export const DEFAULT_PAGE_ENDPOINT = 'https://www.mcpsurveys.com';
 
 export function configPath(): string {
   const base =
