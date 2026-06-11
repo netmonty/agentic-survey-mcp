@@ -1,6 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
-import type { Question, AnswerValue } from '@agentic-survey/schema';
+import type { Question, AnswerValue } from '@data';
 import { validateSubmission, type ValidationError } from '@data';
 import { QuestionField } from '@/components/question-field';
 import { Button } from '@/components/ui/button';

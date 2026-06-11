@@ -1,4 +1,4 @@
-import type { Question, AnswerValue } from '@agentic-survey/schema';
+import type { Question, AnswerValue } from './types';
 import type { PublicClient } from './public-client';
 
 export interface PublicSurvey {

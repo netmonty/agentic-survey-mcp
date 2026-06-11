@@ -1,3 +1,4 @@
+export type { Question, AnswerValue, QuestionType, ChoiceSelection } from './types';
 export { createPublicClient, urlFromRef, type PublicClient } from './public-client';
 export {
   fetchPublishedSurvey,

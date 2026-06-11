@@ -1,5 +1,5 @@
 'use client';
-import type { Question, AnswerValue } from '@agentic-survey/schema';
+import type { Question, AnswerValue } from '@data';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';

@@ -31,9 +31,6 @@
       ],
       "@data/*": [
         "./src/lib/*"
-      ],
-      "@agentic-survey/schema": [
-        "../schema/src/index.ts"
       ]
     }
   },

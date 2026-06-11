@@ -1,4 +1,4 @@
-import type { Question, AnswerValue } from '@agentic-survey/schema';
+import type { Question, AnswerValue } from './types';
 
 export interface ValidationError {
   questionId: string;
