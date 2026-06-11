@@ -14,6 +14,7 @@ import {
   reorderQuestions,
   listResponses,
   getResults,
+  validateSurvey,
   buildShareUrl,
   isErr,
   type Db,
@@ -37,8 +38,37 @@ const QUESTION_TYPE = z.enum([
   'rating',
   'yes_no',
   'number',
+  'date',
+  'time',
+  'slider',
 ]);
 const SURVEY_STATUS = z.enum(['draft', 'published', 'closed']);
+
+const LOGIC_CONDITION = z.object({
+  questionId: z.string().describe('An EARLIER question (lower position) whose answer is tested.'),
+  op: z.enum([
+    'equals',
+    'not_equals',
+    'includes',
+    'gt',
+    'gte',
+    'lt',
+    'lte',
+    'answered',
+    'not_answered',
+  ]),
+  value: z
+    .union([z.string(), z.number(), z.boolean()])
+    .optional()
+    .describe('Choice ops → option id (string); rating/number → number; yes_no equals → boolean. Omit for answered/not_answered.'),
+});
+const LOGIC = z
+  .object({
+    action: z.enum(['show', 'hide']).describe('`show`: visible only when conditions match. `hide`: hidden when they match.'),
+    match: z.enum(['all', 'any']).describe('Combine conditions with AND (`all`) or OR (`any`).'),
+    conditions: z.array(LOGIC_CONDITION).min(1),
+  })
+  .describe('Skip-logic rule. Conditions may reference earlier questions only. Validate with validate_survey before publishing.');
 
 type ToolResult = {
   content: { type: 'text'; text: string }[];
@@ -152,17 +182,21 @@ export function buildServer(): McpServer {
         'Append (or insert at `position`) a question. `config` shape depends on `type`: ' +
         'single_choice/multi_choice → { options: [{ id, label }] }; rating → { min, max }; ' +
         'number → { min?, max?, step?, unit? }; short_text/long_text → { placeholder?, maxLength? }; ' +
-        'yes_no → {}. Give each choice option a stable `id`.',
+        'date → { min?, max? } (ISO YYYY-MM-DD); time → { min?, max? } (24-hour HH:MM); ' +
+        'slider → { min?, max?, step?, unit? } (defaults 0–100, unit "%"); ' +
+        'yes_no → {}. Give each choice option a stable `id`. Optional `logic` makes the question ' +
+        'conditional — see set_question_logic.',
       inputSchema: {
         surveyId: z.string(),
         type: QUESTION_TYPE,
         prompt: z.string().min(1),
         required: z.boolean().optional(),
         config: z.record(z.string(), z.unknown()).optional().describe('Per-type config (see description)'),
+        logic: LOGIC.optional(),
         position: z.number().int().min(0).optional(),
       },
     },
-    async ({ surveyId, type, prompt, required, config, position }) => {
+    async ({ surveyId, type, prompt, required, config, logic, position }) => {
       const c = getConn();
       if (!c.ok) return c.res;
       const r = await addQuestion(c.db, surveyId, {
@@ -170,6 +204,7 @@ export function buildServer(): McpServer {
         prompt,
         required,
         config: config as any,
+        logic,
         position,
       });
       if (isErr(r)) return fail(r.error.code, r.error.message);
@@ -181,13 +216,16 @@ export function buildServer(): McpServer {
     'update_question',
     {
       title: 'Update a question',
-      description: 'Patch a question (prompt, type, required, config, position). Only provided fields change.',
+      description:
+        'Patch a question (prompt, type, required, config, logic, position). Only provided fields change. ' +
+        'Pass `logic: null` to clear an existing conditional rule.',
       inputSchema: {
         questionId: z.string(),
         prompt: z.string().min(1).optional(),
         type: QUESTION_TYPE.optional(),
         required: z.boolean().optional(),
         config: z.record(z.string(), z.unknown()).optional(),
+        logic: LOGIC.nullable().optional(),
         position: z.number().int().min(0).optional(),
       },
     },
@@ -230,6 +268,57 @@ export function buildServer(): McpServer {
       const r = await reorderQuestions(c.db, surveyId, orderedIds);
       if (isErr(r)) return fail(r.error.code, r.error.message);
       return ok('Questions reordered.', { reordered: true });
+    },
+  );
+
+  server.registerTool(
+    'set_question_logic',
+    {
+      title: 'Set a question’s branching / skip logic',
+      description:
+        'Make a question conditional. The question appears (action "show") or is hidden (action "hide") ' +
+        'when its conditions match. Conditions test the answers to EARLIER questions: ' +
+        '{ questionId, op, value }. Ops: equals/not_equals (single_choice option id, yes_no boolean), ' +
+        'includes (multi_choice contains an option id), gt/gte/lt/lte (rating/number), answered/not_answered. ' +
+        'Combine with match "all" (AND) or "any" (OR). Pass logic null to clear. ' +
+        'Always run validate_survey after wiring logic and before publishing.',
+      inputSchema: {
+        questionId: z.string(),
+        logic: LOGIC.nullable().describe('The rule to set, or null to clear.'),
+      },
+    },
+    async ({ questionId, logic }) => {
+      const c = getConn();
+      if (!c.ok) return c.res;
+      const r = await updateQuestion(c.db, questionId, { logic });
+      if (isErr(r)) return fail(r.error.code, r.error.message);
+      return ok(logic ? 'Question logic set.' : 'Question logic cleared.', { question: r.data });
+    },
+  );
+
+  server.registerTool(
+    'validate_survey',
+    {
+      title: 'Validate a survey’s structure and branching logic',
+      description:
+        'Static pre-publish check. Reports errors (broken/forward/cyclic logic references, conditions citing ' +
+        'option ids that don’t exist so a question can never show, choice questions with no options) and ' +
+        'warnings (comparison op on a non-numeric question, logic with no conditions). Returns { ok, issues }; ' +
+        'ok is false when there is at least one error. Call this after building/editing logic, before publish_survey.',
+      inputSchema: { surveyId: z.string() },
+      annotations: { readOnlyHint: true },
+    },
+    async ({ surveyId }) => {
+      const c = getConn();
+      if (!c.ok) return c.res;
+      const r = await getSurvey(c.db, surveyId);
+      if (isErr(r)) return fail(r.error.code, r.error.message);
+      const issues = validateSurvey(r.data.questions);
+      const errorCount = issues.filter((i) => i.level === 'error').length;
+      const summary = issues.length
+        ? `${errorCount} error(s), ${issues.length - errorCount} warning(s).`
+        : 'No issues — ready to publish.';
+      return ok(summary, { ok: errorCount === 0, issues });
     },
   );
 

@@ -25,3 +25,4 @@ export {
 } from './questions.js';
 export { listResponses, type ResponseWithAnswers } from './responses.js';
 export { getResults } from './results.js';
+export { validateSurvey, type SurveyLintIssue } from './lint.js';

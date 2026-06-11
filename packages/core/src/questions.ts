@@ -1,4 +1,4 @@
-import type { Question, QuestionType, QuestionConfig } from '@agentic-survey/schema';
+import type { Question, QuestionType, QuestionConfig, QuestionLogic } from '@agentic-survey/schema';
 import type { Db } from './client.js';
 import { ok, err, fromThrown, type Result } from './result.js';
 import { toQuestion } from './mappers.js';
@@ -11,6 +11,7 @@ export async function addQuestion(
     prompt: string;
     required?: boolean;
     config?: QuestionConfig;
+    logic?: QuestionLogic | null;
     position?: number;
   },
 ): Promise<Result<Question>> {
@@ -35,6 +36,7 @@ export async function addQuestion(
         prompt: input.prompt,
         required: input.required ?? false,
         config: input.config ?? {},
+        logic: input.logic ?? null,
         position,
       })
       .select()
@@ -54,6 +56,7 @@ export async function updateQuestion(
     prompt?: string;
     required?: boolean;
     config?: QuestionConfig;
+    logic?: QuestionLogic | null;
     position?: number;
   },
 ): Promise<Result<Question>> {
@@ -63,6 +66,7 @@ export async function updateQuestion(
     if (patch.prompt !== undefined) row.prompt = patch.prompt;
     if (patch.required !== undefined) row.required = patch.required;
     if (patch.config !== undefined) row.config = patch.config;
+    if (patch.logic !== undefined) row.logic = patch.logic;
     if (patch.position !== undefined) row.position = patch.position;
     const { data, error } = await db
       .from('questions')

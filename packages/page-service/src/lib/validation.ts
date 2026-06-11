@@ -1,4 +1,5 @@
 import type { Question, AnswerValue } from './types';
+import { visibleQuestionIds } from './logic';
 
 export interface ValidationError {
   questionId: string;
@@ -13,10 +14,19 @@ export function validateSubmission(
   const errors: ValidationError[] = [];
   const byQ = new Map(answers.map((a) => [a.questionId, a.value]));
 
+  // Skip-logic: a hidden question is neither required nor allowed to carry an
+  // answer. Visibility is computed from the submitted answers themselves.
+  const visible = visibleQuestionIds(questions, byQ);
+  for (const q of questions) {
+    if (!visible.has(q.id) && byQ.get(q.id) !== undefined)
+      errors.push({ questionId: q.id, message: 'Answer submitted for a hidden question.' });
+  }
+
   const wrongKind = (q: Question) =>
     errors.push({ questionId: q.id, message: `Expected a ${q.type} answer.` });
 
   for (const q of questions) {
+    if (!visible.has(q.id)) continue; // hidden → not required, not validated
     const v = byQ.get(q.id);
     if (v === undefined) {
       if (q.required) errors.push({ questionId: q.id, message: 'This question is required.' });
@@ -44,12 +54,24 @@ export function validateSubmission(
         break;
       }
       case 'rating':
-      case 'number': {
+      case 'number':
+      case 'slider': {
         if (v.kind !== q.type) { wrongKind(q); break; }
         if (cfg.min != null && v.value < cfg.min)
           errors.push({ questionId: q.id, message: `Must be ≥ ${cfg.min}.` });
         if (cfg.max != null && v.value > cfg.max)
           errors.push({ questionId: q.id, message: `Must be ≤ ${cfg.max}.` });
+        break;
+      }
+      case 'date':
+      case 'time': {
+        if (v.kind !== q.type) { wrongKind(q); break; }
+        if (q.required && !v.value)
+          errors.push({ questionId: q.id, message: 'This question is required.' });
+        if (cfg.min != null && v.value && v.value < cfg.min)
+          errors.push({ questionId: q.id, message: `Must be on or after ${cfg.min}.` });
+        if (cfg.max != null && v.value && v.value > cfg.max)
+          errors.push({ questionId: q.id, message: `Must be on or before ${cfg.max}.` });
         break;
       }
       case 'yes_no':

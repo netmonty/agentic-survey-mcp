@@ -14,7 +14,34 @@ export type QuestionType =
   | 'long_text'
   | 'rating'
   | 'yes_no'
-  | 'number';
+  | 'number'
+  | 'date'
+  | 'time'
+  | 'slider';
+
+/** Branching / skip-logic — mirror of @agentic-survey/schema; keep in sync. */
+export type LogicOp =
+  | 'equals'
+  | 'not_equals'
+  | 'includes'
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte'
+  | 'answered'
+  | 'not_answered';
+
+export interface LogicCondition {
+  questionId: string;
+  op: LogicOp;
+  value?: string | number | boolean;
+}
+
+export interface QuestionLogic {
+  action: 'show' | 'hide';
+  match: 'all' | 'any';
+  conditions: LogicCondition[];
+}
 
 export interface Question {
   id: string;
@@ -25,7 +52,8 @@ export interface Question {
   required: boolean;
   /** Per-type config (options, scale bounds, etc.) — read loosely at render. */
   config: Record<string, unknown>;
-  logic?: unknown | null;
+  /** Branching / skip-logic rules. `null`/absent = always shown. */
+  logic?: QuestionLogic | null;
 }
 
 export interface ChoiceSelection {
@@ -40,4 +68,7 @@ export type AnswerValue =
   | { kind: 'long_text'; text: string }
   | { kind: 'rating'; value: number }
   | { kind: 'yes_no'; value: boolean }
-  | { kind: 'number'; value: number };
+  | { kind: 'number'; value: number }
+  | { kind: 'date'; value: string } // ISO YYYY-MM-DD
+  | { kind: 'time'; value: string } // 24-hour HH:MM
+  | { kind: 'slider'; value: number };

@@ -1,4 +1,13 @@
-export type { Question, AnswerValue, QuestionType, ChoiceSelection } from './types';
+export type {
+  Question,
+  AnswerValue,
+  QuestionType,
+  ChoiceSelection,
+  LogicOp,
+  LogicCondition,
+  QuestionLogic,
+} from './types';
+export { visibleQuestionIds, evalCondition } from './logic';
 export { createPublicClient, urlFromRef, isValidProjectRef, type PublicClient } from './public-client';
 export {
   fetchPublishedSurvey,

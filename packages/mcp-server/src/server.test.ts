@@ -54,8 +54,10 @@ test('lists the full Phase 1 tool surface', { skip }, async () => {
     'publish_survey',
     'remove_question',
     'reorder_questions',
+    'set_question_logic',
     'setup_connection',
     'update_question',
+    'validate_survey',
   ]);
 });
 

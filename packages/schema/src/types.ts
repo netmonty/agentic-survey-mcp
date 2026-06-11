@@ -18,7 +18,10 @@ export type QuestionType =
   | 'long_text'
   | 'rating'
   | 'yes_no'
-  | 'number';
+  | 'number'
+  | 'date'
+  | 'time'
+  | 'slider';
 
 // ---------------------------------------------------------------------------
 // Question configuration (stored in questions.config jsonb)
@@ -68,13 +71,81 @@ export interface NumberConfig {
   unit?: string;
 }
 
+/** Date question. Bounds are ISO `YYYY-MM-DD` strings. */
+export interface DateConfig {
+  min?: string;
+  max?: string;
+}
+
+/** Time-of-day question, 24-hour. Bounds are `HH:MM` strings. */
+export interface TimeConfig {
+  min?: string;
+  max?: string;
+}
+
+/** Slider. Defaults to a 0–100 percentage (step 1, unit "%"). */
+export interface SliderConfig {
+  min?: number;
+  max?: number;
+  step?: number;
+  unit?: string;
+}
+
 export type QuestionConfig =
   | SingleChoiceConfig
   | MultiChoiceConfig
   | TextConfig
   | RatingConfig
   | YesNoConfig
-  | NumberConfig;
+  | NumberConfig
+  | DateConfig
+  | TimeConfig
+  | SliderConfig;
+
+// ---------------------------------------------------------------------------
+// Branching / skip logic (stored in questions.logic jsonb; null = always shown)
+//
+// A question's visibility is computed from conditions on EARLIER questions
+// (lower position). Backward-only references keep evaluation single-pass and
+// cycle-free. The same rules are evaluated by the page-service renderer (to
+// show/hide live) and by submission validation (so a hidden required question
+// isn't required, and answers to hidden questions are rejected).
+// ---------------------------------------------------------------------------
+
+export type LogicOp =
+  | 'equals'
+  | 'not_equals'
+  | 'includes' // multi_choice contains the option / single_choice equals it
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte'
+  | 'answered'
+  | 'not_answered';
+
+/** A single condition tested against the answer to `questionId`. */
+export interface LogicCondition {
+  /** The earlier question whose answer is tested. */
+  questionId: string;
+  op: LogicOp;
+  /**
+   * Comparison operand. Choice ops compare against an option `id` (string);
+   * rating/number ops against a number; yes_no equality against a boolean.
+   * Omitted for `answered` / `not_answered`.
+   */
+  value?: string | number | boolean;
+}
+
+export interface QuestionLogic {
+  /**
+   * `show`: the question is shown only when the conditions match (hidden
+   * otherwise). `hide`: shown by default, hidden when the conditions match.
+   */
+  action: 'show' | 'hide';
+  /** Combine conditions with AND (`all`) or OR (`any`). */
+  match: 'all' | 'any';
+  conditions: LogicCondition[];
+}
 
 /** Survey-level branding/settings (stored in surveys.config jsonb). One theme for v1. */
 export interface SurveyConfig {
@@ -110,7 +181,8 @@ export interface Question {
   prompt: string;
   required: boolean;
   config: QuestionConfig;
-  logic: unknown | null; // branching rules — v2
+  /** Branching / skip-logic rules. `null` = always shown. */
+  logic: QuestionLogic | null;
 }
 
 export interface Response {
@@ -146,7 +218,10 @@ export type AnswerValue =
   | { kind: 'long_text'; text: string }
   | { kind: 'rating'; value: number }
   | { kind: 'yes_no'; value: boolean }
-  | { kind: 'number'; value: number };
+  | { kind: 'number'; value: number }
+  | { kind: 'date'; value: string } // ISO YYYY-MM-DD
+  | { kind: 'time'; value: string } // 24-hour HH:MM
+  | { kind: 'slider'; value: number };
 
 // ---------------------------------------------------------------------------
 // get_results contract — what consumer agents depend on.

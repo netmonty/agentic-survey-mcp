@@ -56,16 +56,26 @@ authoring and reading results. See [`docs/trust-model.md`](docs/trust-model.md).
 ## The MCP tools
 
 `setup_connection`, `create_survey`, `add_question`, `update_question`, `remove_question`,
-`reorder_questions`, `publish_survey`, `get_share_link`, `list_surveys`, `get_survey`,
-`list_responses`, `get_results`.
+`reorder_questions`, `set_question_logic`, `validate_survey`, `publish_survey`, `get_share_link`,
+`list_surveys`, `get_survey`, `list_responses`, `get_results`.
 
-Question types: `single_choice`, `multi_choice`, `short_text`, `long_text`, `rating`, `yes_no`, `number`.
+Question types: `single_choice`, `multi_choice`, `short_text`, `long_text`, `rating`, `yes_no`,
+`number`, `date`, `time` (24-hour), `slider` (defaults to a 0–100 percentage).
 
 ## Self-hosting the page-service
 
 The MCP server points share links at a default hosted instance, but the endpoint is configurable.
 To run your own, deploy `packages/page-service` (a standard Next.js app) and set the page endpoint
 in your config. See [`packages/page-service/.env.example`](packages/page-service/.env.example).
+
+**Two built-in themes.** The respondent page ships with two visual themes, chosen deployment-wide
+via the `BRAND_THEME` env var:
+
+- `editorial` (default) — warm, paper-like, light.
+- `charcoal` — dark and techy.
+
+Set `BRAND_THEME=charcoal` (or leave it unset for `editorial`) on your deployment. Per-survey brand
+colour and logo are separate and travel in each survey's own `config.theme`.
 
 ## Development
 

@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useState } from 'react';
 import type { Question, AnswerValue } from '@data';
-import { validateSubmission, type ValidationError } from '@data';
+import { validateSubmission, visibleQuestionIds, type ValidationError } from '@data';
 import { QuestionField } from '@/components/question-field';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -21,16 +21,25 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
   const [formError, setFormError] = useState<string | null>(null);
 
   const thankYou = survey.config?.thankYou as string | undefined;
-  const answeredCount = useMemo(
-    () => questions.filter((q) => answers[q.id] !== undefined).length,
+
+  // Skip-logic: only show questions whose conditions are currently met.
+  const visibleIds = useMemo(
+    () => visibleQuestionIds(questions, new Map(Object.entries(answers))),
     [answers, questions],
   );
-  const progress = questions.length ? Math.round((answeredCount / questions.length) * 100) : 0;
+  const visibleQuestions = useMemo(
+    () => questions.filter((q) => visibleIds.has(q.id)),
+    [questions, visibleIds],
+  );
+  const answeredCount = visibleQuestions.filter((q) => answers[q.id] !== undefined).length;
+  const progress = visibleQuestions.length
+    ? Math.round((answeredCount / visibleQuestions.length) * 100)
+    : 0;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
-    const list = questions
+    const list = visibleQuestions
       .map((q) => ({ questionId: q.id, value: answers[q.id] }))
       .filter((a): a is { questionId: string; value: AnswerValue } => a.value !== undefined);
     const validation: ValidationError[] = validateSubmission(questions, list);
@@ -106,7 +115,7 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
         onSubmit={onSubmit}
         className="flex flex-col gap-[var(--gap-q)] px-[var(--pad-x)] py-[var(--pad-y)] sm:px-[var(--pad-x-sm)]"
       >
-        {questions.map((q, i) => (
+        {visibleQuestions.map((q, i) => (
           <div
             key={q.id}
             id={q.id}
@@ -125,7 +134,7 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
 
         <div
           className="animate-fade-up space-y-4 border-t border-border/70 pt-2"
-          style={{ animationDelay: `${120 + questions.length * 55}ms` }}
+          style={{ animationDelay: `${120 + visibleQuestions.length * 55}ms` }}
         >
           {formError && <p className="text-sm text-destructive">{formError}</p>}
           <Button type="submit" size="lg" className="w-full" disabled={submitting}>

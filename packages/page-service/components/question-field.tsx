@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Minus, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { TimeField } from '@/components/time-field';
 
 interface Props {
   question: Question;
@@ -226,6 +227,63 @@ export function QuestionField({ question, index, value, onChange, error }: Props
                 {cfg.unit}
               </span>
             )}
+          </div>
+        );
+      }
+
+      case 'date':
+        return (
+          <Input
+            type="date"
+            min={cfg.min}
+            max={cfg.max}
+            className="max-w-[18rem]"
+            value={value?.kind === 'date' ? value.value : ''}
+            onChange={(e) => onChange(e.target.value ? { kind: 'date', value: e.target.value } : undefined)}
+          />
+        );
+
+      case 'time':
+        return (
+          <TimeField
+            value={value?.kind === 'time' ? value.value : undefined}
+            onChange={(v) => onChange(v ? { kind: 'time', value: v } : undefined)}
+          />
+        );
+
+      case 'slider': {
+        const min = cfg.min ?? 0;
+        const max = cfg.max ?? 100;
+        const step = cfg.step ?? 1;
+        const unit = cfg.unit ?? '%';
+        const current = value?.kind === 'slider' ? value.value : undefined;
+        const shown = current ?? Math.round((min + max) / 2);
+        return (
+          <div className="max-w-[28rem] space-y-3">
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min={min}
+                max={max}
+                step={step}
+                value={shown}
+                onChange={(e) => onChange({ kind: 'slider', value: Number(e.target.value) })}
+                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-secondary accent-primary"
+              />
+              <span
+                className={cn(
+                  'w-16 shrink-0 text-right text-[0.95rem] font-medium tabular-nums',
+                  current === undefined ? 'text-muted-foreground' : 'text-foreground',
+                )}
+              >
+                {shown}
+                {unit}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>{min}{unit}</span>
+              <span>{max}{unit}</span>
+            </div>
           </div>
         );
       }

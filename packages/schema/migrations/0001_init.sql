@@ -42,7 +42,8 @@ create table if not exists public.questions (
   type       text not null
                check (type in (
                  'single_choice', 'multi_choice', 'short_text',
-                 'long_text', 'rating', 'yes_no', 'number'
+                 'long_text', 'rating', 'yes_no', 'number',
+                 'date', 'time', 'slider'
                )),
   prompt     text not null,
   required   boolean not null default false,

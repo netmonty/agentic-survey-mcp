@@ -69,7 +69,8 @@ function yesNoAggregate(values: AnswerValue[]): ChoiceAggregate {
 
 function numericAggregate(values: AnswerValue[]): NumericAggregate {
   const nums: number[] = [];
-  for (const v of values) if (v.kind === 'rating' || v.kind === 'number') nums.push(v.value);
+  for (const v of values)
+    if (v.kind === 'rating' || v.kind === 'number' || v.kind === 'slider') nums.push(v.value);
   const totalAnswered = nums.length;
   if (!totalAnswered) {
     return { kind: 'numeric', mean: null, median: null, min: null, max: null, distribution: [], totalAnswered: 0 };
@@ -96,7 +97,10 @@ function numericAggregate(values: AnswerValue[]): NumericAggregate {
 
 function textAggregate(values: AnswerValue[]): TextAggregate {
   const responses: string[] = [];
-  for (const v of values) if (v.kind === 'short_text' || v.kind === 'long_text') responses.push(v.text);
+  for (const v of values) {
+    if (v.kind === 'short_text' || v.kind === 'long_text') responses.push(v.text);
+    else if (v.kind === 'date' || v.kind === 'time') responses.push(v.value);
+  }
   return { kind: 'text', totalAnswered: responses.length, responses };
 }
 
@@ -109,9 +113,12 @@ function aggregateQuestion(q: Question, values: AnswerValue[]): QuestionAggregat
       return yesNoAggregate(values);
     case 'rating':
     case 'number':
+    case 'slider':
       return numericAggregate(values);
     case 'short_text':
     case 'long_text':
+    case 'date':
+    case 'time':
       return textAggregate(values);
   }
 }

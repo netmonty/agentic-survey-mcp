@@ -2,6 +2,15 @@
 // hydration), fonts are self-hosted via next/font, the only outbound data goes
 // to the respondent's Supabase project, and Turnstile (if enabled) needs its
 // script + frame. frame-ancestors 'none' blocks the page being iframed.
+//
+// 'unsafe-eval' is added in DEVELOPMENT only: React's dev build uses eval() for
+// debugging features (callstack reconstruction). Production never uses eval(),
+// so the prod CSP stays strict.
+const isDev = process.env.NODE_ENV !== 'production';
+const scriptSrc =
+  "script-src 'self' 'unsafe-inline'" +
+  (isDev ? " 'unsafe-eval'" : '') +
+  ' https://challenges.cloudflare.com';
 const SURVEY_CSP = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -10,7 +19,7 @@ const SURVEY_CSP = [
   "img-src 'self' data:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
+  scriptSrc,
   "frame-src https://challenges.cloudflare.com",
   "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com",
 ].join('; ');

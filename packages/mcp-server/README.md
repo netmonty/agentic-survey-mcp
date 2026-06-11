@@ -63,9 +63,13 @@ Publishing a survey returns a share link carrying your project ref and publishab
 
 ## Tools
 
-`setup_connection`, `create_survey`, `add_question`, `update_question`, `remove_question`, `reorder_questions`, `publish_survey`, `get_share_link`, `list_surveys`, `get_survey`, `list_responses`, `get_results`.
+`setup_connection`, `create_survey`, `add_question`, `update_question`, `remove_question`, `reorder_questions`, `set_question_logic`, `validate_survey`, `publish_survey`, `get_share_link`, `list_surveys`, `get_survey`, `list_responses`, `get_results`.
 
-Question types: `single_choice`, `multi_choice`, `rating`, `yes_no`, `number`, `short_text`, `long_text`.
+Question types: `single_choice`, `multi_choice`, `rating`, `yes_no`, `number`, `short_text`, `long_text`, `date`, `time` (24-hour), `slider` (0–100 percentage by default).
+
+### Branching / skip logic
+
+`set_question_logic` makes a question conditional: it shows (or hides) based on the answers to **earlier** questions — e.g. only ask the follow-up if someone rated you ≤ 2. The page-service evaluates this live and submission validation respects it (a hidden required question isn't required; answers to hidden questions are rejected). Run `validate_survey` after wiring logic and before `publish_survey` — it catches forward/dangling references, conditions citing options that don't exist (so a question could never appear), and choice questions with no options.
 
 ## License
 

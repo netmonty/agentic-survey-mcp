@@ -27,7 +27,7 @@ Full specs: [`docs/survey-mcp-build-brief.md`](docs/survey-mcp-build-brief.md),
 ```
 packages/schema        SQL migration (migrations/0001_init.sql) + shared TS types + get_results contract
 packages/core          pure service layer over an injected Supabase client; typed Result, never throws
-packages/mcp-server    MCP server (stdio) + `agentic-survey` CLI; 12 tools over core
+packages/mcp-server    MCP server (stdio) + `agentic-survey` CLI; 14 tools over core
 packages/page-service  Next.js 16 + React 19 public page (render + collect); self-hostable
 docs/                  build brief, saas plan, trust model, spike findings
 examples/              claude_desktop_config.json, sample config, sample-survey prompts
@@ -37,8 +37,10 @@ examples/              claude_desktop_config.json, sample config, sample-survey 
 
 - ✅ **schema**: migration applied + verified; RLS proven (see spike findings).
 - ✅ **core**: all functions + `get_results` aggregation; integration tests pass.
-- ✅ **mcp-server**: 12 tools, CLI `init` (default cmd = serve the stdio server; `init` = setup), stdio smoke test passes.
-- ✅ **page-service**: Next 16 + shadcn UI, all 7 question types + dropdown variant, two themes, themed number stepper; lib spike test passes.
+- ✅ **mcp-server**: 14 tools, CLI `init` (default cmd = serve the stdio server; `init` = setup), stdio smoke test passes.
+- ✅ **page-service**: Next 16 + shadcn UI, all 10 question types (incl. date/time/slider) + dropdown variant, two themes, themed number stepper; lib spike test passes.
+- ✅ **branching / skip logic**: `questions.logic` now typed (`QuestionLogic`); `set_question_logic` + `validate_survey` tools; shared evaluator (`page-service/src/lib/logic.ts`) drives live show/hide and visibility-aware submission validation (hidden questions aren't required; answers to hidden questions rejected). Conditions reference earlier questions only. DB-less unit tests in `logic.test.ts` / `lint.test.ts`.
+- ✅ **date / time / slider question types**: date (`YYYY-MM-DD`), time (24-hour `HH:MM`), slider (numeric, defaults 0–100 `%`). Slider aggregates as numeric; date/time as text. Fresh installs get them from the updated `0001_init.sql`; **existing deployments must run `migrations/0002_add_question_types.sql`** (it alters the `questions.type` check constraint).
 - ✅ **packaging**: schema/core/mcp-server build to `dist` via `tsc -b` (project references); publishable; `bin` → `dist/cli.js`. (page-service is deployed, not npm-published.)
 - ✅ **deployed**: page-service live at **https://agentic-survey-pages.vercel.app** — `/` = marketing landing, `/s/[ref]/[surveyId]` = survey, `/api/submit` = collect. Verified end-to-end with a real submission.
 
