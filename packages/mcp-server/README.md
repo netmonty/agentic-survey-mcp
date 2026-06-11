@@ -47,6 +47,10 @@ The agent chains the tools for you: `create_survey` → `add_question` → `publ
 
 > Tip: `npm i -g @agentic-survey/mcp-server` gives you the shorter `agentic-survey init` command.
 
+### Do I need to enable RLS / anything in the Supabase dashboard?
+
+No. The `init --print-sql` migration enables Row Level Security and the access policies for you, on all four tables. **Don't disable RLS:** it's what fences the publishable key (which travels in the share link) so it can *only* read **published** surveys and **insert** responses. It cannot read anyone's responses or your drafts. Your secret key, stored locally on your machine, bypasses RLS for authoring and analysis.
+
 ## How it works
 
 ```

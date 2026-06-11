@@ -167,7 +167,7 @@
         <div class="num">1</div>
         <div class="body">
           <h3>Create the database tables</h3>
-          <p>This prints some SQL. Copy it into your Supabase SQL editor and run it once, to set up the tables your surveys live in.</p>
+          <p>This prints some SQL. Copy it into your Supabase SQL editor and run it once. It makes the tables and switches on row-level security for you, so the public key in your share links can only read published surveys and accept responses, nothing else. No dashboard toggles, and don't turn RLS off.</p>
           <div class="codeblock">
             <button class="copy" data-copy="npx -y @agentic-survey/mcp-server init --print-sql">Copy</button>
 <pre>npx -y @agentic-survey/mcp-server init --print-sql</pre>

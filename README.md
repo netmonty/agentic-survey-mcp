@@ -44,6 +44,15 @@ npx -y @agentic-survey/mcp-server init
 
 > Tip: `npm i -g @agentic-survey/mcp-server` gives you the shorter `agentic-survey init` command.
 
+### Do I need to enable RLS in Supabase?
+
+No, the schema SQL does it. Running `init --print-sql` enables Row Level Security and the
+access policies on all four tables, so there's nothing to toggle in the Supabase dashboard
+(and you shouldn't disable RLS). The `anon`/publishable key (which travels in the share link)
+can then *only* read **published** surveys/questions and **insert** responses/answers; it
+cannot read any responses or your drafts. The secret key on your machine bypasses RLS for
+authoring and reading results. See [`docs/trust-model.md`](docs/trust-model.md).
+
 ## The MCP tools
 
 `setup_connection`, `create_survey`, `add_question`, `update_question`, `remove_question`,
