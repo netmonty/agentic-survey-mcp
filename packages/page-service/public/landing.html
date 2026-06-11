@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agentic Survey MCP — your agent builds surveys, you own the data</title>
+  <meta name="description" content="An open-source MCP server that lets your AI agent build surveys and review results — on your own Supabase. You own the data, you carry the AI cost, your keys never leave your machine." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0e0f13;
+      --bg-2: #14161b;
+      --surface: #16181e;
+      --border: #262932;
+      --text: #e9e7e1;
+      --muted: #9a9aa3;
+      --clay: #db6a36;
+      --clay-soft: #e98a5c;
+      --radius: 14px;
+      --maxw: 1080px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Hanken Grotesk', system-ui, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(48rem 32rem at 70% -6rem, rgba(219,106,54,0.14), transparent 60%),
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: auto, 48px 48px, 48px 48px;
+      background-position: center top;
+    }
+    .grid-fade { position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(60rem 60rem at 50% 30%, transparent 30%, var(--bg) 78%); }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    h1, h2, h3 { font-family: 'Bricolage Grotesque', serif; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; }
+    code, pre, .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    a { color: inherit; }
+
+    /* nav */
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+    .dot { width: 11px; height: 11px; border-radius: 3px; background: var(--clay); box-shadow: 0 0 16px rgba(219,106,54,0.7); }
+    .nav-links { display: flex; gap: 26px; align-items: center; font-size: 0.92rem; }
+    .nav-links a { color: var(--muted); text-decoration: none; transition: color .18s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { color: var(--text) !important; border: 1px solid var(--border); padding: 8px 16px; border-radius: 9px; transition: all .18s; }
+    .nav-cta:hover { border-color: var(--clay); background: rgba(219,106,54,0.08); }
+    @media (max-width: 680px) { .nav-links a:not(.nav-cta) { display: none; } }
+
+    /* hero */
+    .hero { padding: 84px 0 64px; }
+    .eyebrow { font-family: 'JetBrains Mono'; font-size: 0.74rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--clay-soft); margin-bottom: 22px; }
+    .hero h1 { font-size: clamp(2.6rem, 6.5vw, 4.6rem); max-width: 16ch; }
+    .hero h1 .accent { color: var(--clay); }
+    .hero p.lede { color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.25rem); max-width: 56ch; margin-top: 24px; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
+    .btn { display: inline-flex; align-items: center; gap: 9px; padding: 13px 22px; border-radius: 11px; font-weight: 600; font-size: 0.96rem; text-decoration: none; transition: all .2s; }
+    .btn-primary { background: var(--clay); color: #1a0e07; }
+    .btn-primary:hover { background: var(--clay-soft); transform: translateY(-2px); box-shadow: 0 10px 30px -8px rgba(219,106,54,0.5); }
+    .btn-ghost { border: 1px solid var(--border); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--clay); transform: translateY(-2px); }
+
+    /* terminal chrome */
+    .term { margin-top: 44px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; max-width: 640px; box-shadow: 0 24px 60px -24px rgba(0,0,0,0.7); }
+    .term-bar { display: flex; align-items: center; gap: 7px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #34363f; display: inline-block; }
+    .term-bar span { margin-left: 10px; font-family: 'JetBrains Mono'; font-size: 0.76rem; color: var(--muted); }
+    .term pre { padding: 18px 20px; font-size: 0.86rem; line-height: 1.85; overflow-x: auto; color: var(--text); }
+    .term .c { color: #5d6069; } .term .g { color: var(--clay-soft); }
+
+    /* sections */
+    section { padding: 64px 0; }
+    .sec-label { font-family: 'JetBrains Mono'; font-size: 0.74rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--clay-soft); margin-bottom: 14px; }
+    h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 14px; }
+    .sec-intro { color: var(--muted); max-width: 60ch; font-size: 1.05rem; }
+
+    /* value cards */
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
+    @media (max-width: 760px) { .cards { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; transition: border-color .2s, transform .2s; }
+    .card:hover { border-color: var(--clay); transform: translateY(-3px); }
+    .card .k { font-family: 'JetBrains Mono'; color: var(--clay); font-size: 0.82rem; margin-bottom: 12px; }
+    .card h3 { font-size: 1.2rem; margin-bottom: 8px; }
+    .card p { color: var(--muted); font-size: 0.95rem; }
+
+    /* flow diagram */
+    .flow { margin-top: 36px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; }
+    .flow pre { font-size: 0.82rem; line-height: 1.9; color: var(--muted); overflow-x: auto; }
+    .flow pre b { color: var(--text); } .flow pre .ac { color: var(--clay-soft); }
+
+    /* quickstart */
+    .step { display: flex; gap: 20px; margin-top: 34px; }
+    .step .num { font-family: 'Bricolage Grotesque'; font-weight: 700; color: var(--clay); font-size: 1.1rem; flex-shrink: 0; width: 30px; }
+    .step .body { flex: 1; min-width: 0; }
+    .step h3 { font-size: 1.18rem; margin-bottom: 6px; }
+    .step p { color: var(--muted); font-size: 0.96rem; margin-bottom: 14px; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tab { font-family: 'JetBrains Mono'; font-size: 0.8rem; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .15s; }
+    .tab.active { color: var(--text); border-color: var(--clay); background: rgba(219,106,54,0.1); }
+    .panel { display: none; } .panel.active { display: block; }
+
+    /* code block */
+    .codeblock { position: relative; background: var(--bg-2); border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+    .codeblock pre { padding: 16px 18px; padding-right: 54px; font-size: 0.83rem; line-height: 1.7; overflow-x: auto; color: var(--text); }
+    .codeblock .copy { position: absolute; top: 10px; right: 10px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-family: 'JetBrains Mono'; font-size: 0.7rem; padding: 5px 9px; border-radius: 7px; cursor: pointer; transition: all .15s; }
+    .codeblock .copy:hover { color: var(--text); border-color: var(--clay); }
+    .codeblock .cm { color: #5d6069; } .codeblock .st { color: var(--clay-soft); }
+
+    /* tools */
+    .pills { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 26px; }
+    .pill { font-family: 'JetBrains Mono'; font-size: 0.8rem; padding: 7px 13px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .pill b { color: var(--text); font-weight: 500; }
+
+    /* footer */
+    footer { border-top: 1px solid var(--border); padding: 50px 0 60px; margin-top: 40px; }
+    .foot-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; align-items: flex-start; }
+    .foot-links { display: flex; flex-wrap: wrap; gap: 14px 28px; }
+    .foot-links a { color: var(--muted); text-decoration: none; font-size: 0.95rem; transition: color .18s; display: inline-flex; align-items: center; gap: 7px; }
+    .foot-links a:hover { color: var(--clay-soft); }
+    .foot-note { color: #5d6069; font-size: 0.85rem; margin-top: 26px; }
+    .foot-note a { color: var(--muted); }
+
+    .reveal { opacity: 0; transform: translateY(16px); animation: rise .7s cubic-bezier(.16,1,.3,1) forwards; }
+    @keyframes rise { to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="grid-fade"></div>
+  <div class="wrap">
+    <nav>
+      <div class="brand"><span class="dot"></span> Agentic Survey MCP</div>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#quickstart">Quick start</a>
+        <a href="https://montymakesthings.com">montymakesthings</a>
+        <a class="nav-cta" href="https://github.com/netmonty/agentic-survey-mcp">GitHub ↗</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow reveal">Open-source · MIT · Model Context Protocol</p>
+      <h1 class="reveal" style="animation-delay:.05s">Your agent builds the survey. <span class="accent">You own the data.</span></h1>
+      <p class="lede reveal" style="animation-delay:.12s">An open-source MCP server that lets your AI agent create surveys and review results — written straight into <em>your own</em> Supabase. You keep the data, you carry the AI cost, and your keys never leave your machine.</p>
+      <div class="cta-row reveal" style="animation-delay:.18s">
+        <a class="btn btn-primary" href="#quickstart">Quick start</a>
+        <a class="btn btn-ghost" href="https://github.com/netmonty/agentic-survey-mcp">View source ↗</a>
+      </div>
+      <div class="term reveal" style="animation-delay:.24s">
+        <div class="term-bar"><i></i><i></i><i></i><span>your terminal</span></div>
+<pre><span class="c"># 1 · install the schema into your Supabase</span>
+npx -y @agentic-survey/mcp-server init --print-sql
+
+<span class="c"># 2 · store your keys locally (typed in, never sent to the agent)</span>
+npx -y @agentic-survey/mcp-server init
+<span class="g">✓ Connected. Schema present.</span></pre>
+      </div>
+    </header>
+
+    <section>
+      <p class="sec-label">Why it's different</p>
+      <h2>Zero data custody. Zero AI cost. Yours end to end.</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="k">01 — own the data</div>
+          <h3>It's your Supabase</h3>
+          <p>Surveys, questions, and responses live in your own Supabase project. The author's infrastructure stores nothing — there's no database to leak.</p>
+        </div>
+        <div class="card">
+          <div class="k">02 — own the cost</div>
+          <h3>Your agent does the work</h3>
+          <p>Survey authoring and analysis run inside your agent. There's no AI on the server side, so you carry your own AI cost — and nothing else.</p>
+        </div>
+        <div class="card">
+          <div class="k">03 — own the keys</div>
+          <h3>Keys stay local</h3>
+          <p>Your Supabase secret key lives in local config on your machine — never transmitted, never logged, never a tool argument the agent can see.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <p class="sec-label">How it works</p>
+      <h2>Three pieces, one source of truth</h2>
+      <p class="sec-intro">Your agent drives the MCP server to build and publish a survey. Publishing returns a share link; a respondent opens it, and the stateless page-service writes their submission straight into your Supabase. Then your agent reads the results.</p>
+      <div class="flow">
+<pre>  Your AI agent  <span class="ac">──(MCP / stdio)──▶</span>  <b>mcp-server</b> ──┐
+                                                <span class="ac">├──▶</span>  <b>your Supabase</b>
+  Respondent  <span class="ac">──(browser)──▶</span>  <b>page-service</b> ──┘      <span class="ac">(store of record)</span></pre>
+      </div>
+      <div class="pills">
+        <span class="pill"><b>schema</b> — SQL + shared types</span>
+        <span class="pill"><b>core</b> — pure survey logic</span>
+        <span class="pill"><b>mcp-server</b> — 12 tools + CLI</span>
+        <span class="pill"><b>page-service</b> — Next.js public page</span>
+      </div>
+    </section>
+
+    <section id="quickstart">
+      <p class="sec-label">Quick start</p>
+      <h2>Connect your agent in two minutes</h2>
+      <p class="sec-intro">Works with any MCP-capable client. First connect your Supabase (above), then point your client at the server.</p>
+
+      <div class="step">
+        <div class="num">1</div>
+        <div class="body">
+          <h3>Install the schema &amp; store your keys</h3>
+          <p>In your terminal — your keys are typed in and stored locally, never sent to the agent.</p>
+          <div class="codeblock">
+            <button class="copy" data-copy="npx -y @agentic-survey/mcp-server init">Copy</button>
+<pre><span class="cm"># paste the printed SQL into the Supabase SQL editor, then:</span>
+npx -y @agentic-survey/mcp-server init</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div class="body">
+          <h3>Point your client at the server</h3>
+          <p>Pick your client:</p>
+          <div class="tabs">
+            <button class="tab active" data-tab="cc">Claude Code</button>
+            <button class="tab" data-tab="cd">Claude Desktop</button>
+            <button class="tab" data-tab="other">Cursor / other</button>
+          </div>
+          <div class="panel active" data-panel="cc">
+            <div class="codeblock">
+              <button class="copy" data-copy="claude mcp add agentic-survey -- npx -y @agentic-survey/mcp-server">Copy</button>
+<pre>claude mcp add agentic-survey -- npx -y @agentic-survey/mcp-server</pre>
+            </div>
+          </div>
+          <div class="panel" data-panel="cd">
+            <div class="codeblock">
+              <button class="copy" data-copy='{
+  "mcpServers": {
+    "agentic-survey": { "command": "npx", "args": ["-y", "@agentic-survey/mcp-server"] }
+  }
+}'>Copy</button>
+<pre><span class="cm">// claude_desktop_config.json</span>
+{
+  <span class="st">"mcpServers"</span>: {
+    <span class="st">"agentic-survey"</span>: { <span class="st">"command"</span>: <span class="st">"npx"</span>, <span class="st">"args"</span>: [<span class="st">"-y"</span>, <span class="st">"@agentic-survey/mcp-server"</span>] }
+  }
+}</pre>
+            </div>
+          </div>
+          <div class="panel" data-panel="other">
+            <div class="codeblock">
+              <button class="copy" data-copy='{
+  "mcpServers": {
+    "agentic-survey": { "command": "npx", "args": ["-y", "@agentic-survey/mcp-server"] }
+  }
+}'>Copy</button>
+<pre><span class="cm">// .cursor/mcp.json (or your client's MCP config)</span>
+{
+  <span class="st">"mcpServers"</span>: {
+    <span class="st">"agentic-survey"</span>: { <span class="st">"command"</span>: <span class="st">"npx"</span>, <span class="st">"args"</span>: [<span class="st">"-y"</span>, <span class="st">"@agentic-survey/mcp-server"</span>] }
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div class="body">
+          <h3>Just talk to your agent</h3>
+          <p>It chains the tools for you — <span class="mono" style="color:var(--clay-soft)">create_survey → add_question → publish_survey → get_results</span>.</p>
+          <div class="codeblock">
+            <button class="copy" data-copy="Build a 4-question customer-satisfaction survey with a 1–5 rating, a yes/no, a multiple choice, and an open comment. Publish it and give me the share link.">Copy</button>
+<pre>“Build a 4-question customer-satisfaction survey with a 1–5 rating,
+ a yes/no, a multiple choice, and an open comment. Publish it and
+ give me the share link.”
+
+“Summarise the results so far — themes from the comments too.”</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="sec-label">The toolbox</p>
+      <h2>Twelve tools, seven question types</h2>
+      <p class="sec-intro">Clear, chainable MCP tools over a pure service layer — typed results, never thrown errors.</p>
+      <div class="pills">
+        <span class="pill">setup_connection</span><span class="pill">create_survey</span><span class="pill">add_question</span>
+        <span class="pill">update_question</span><span class="pill">remove_question</span><span class="pill">reorder_questions</span>
+        <span class="pill">publish_survey</span><span class="pill">get_share_link</span><span class="pill">list_surveys</span>
+        <span class="pill">get_survey</span><span class="pill">list_responses</span><span class="pill">get_results</span>
+      </div>
+      <div class="pills" style="margin-top:14px">
+        <span class="pill"><b>single_choice</b></span><span class="pill"><b>multi_choice</b></span><span class="pill"><b>rating</b></span>
+        <span class="pill"><b>yes_no</b></span><span class="pill"><b>number</b></span><span class="pill"><b>short_text</b></span><span class="pill"><b>long_text</b></span>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="brand"><span class="dot"></span> Agentic Survey MCP</div>
+        <div class="foot-links">
+          <a href="https://github.com/netmonty">GitHub · @netmonty ↗</a>
+          <!-- TODO: replace with your real LinkedIn URL -->
+          <a href="https://www.linkedin.com/in/YOUR-HANDLE">LinkedIn ↗</a>
+          <a href="https://montymakesthings.com">montymakesthings.com ↗</a>
+          <a href="mailto:monty@daley.org.nz">monty@daley.org.nz</a>
+        </div>
+      </div>
+      <p class="foot-note">MIT licensed. Built by <a href="https://montymakesthings.com">Monty</a>. Source on <a href="https://github.com/netmonty/agentic-survey-mcp">GitHub</a>.</p>
+    </div>
+  </footer>
+
+  <script>
+    // copy buttons
+    document.querySelectorAll('.copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        navigator.clipboard.writeText(btn.getAttribute('data-copy')).then(function () {
+          var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400);
+        });
+      });
+    });
+    // tabs
+    document.querySelectorAll('.tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var id = tab.getAttribute('data-tab');
+        var group = tab.closest('.body');
+        group.querySelectorAll('.tab').forEach(function (t) { t.classList.toggle('active', t === tab); });
+        group.querySelectorAll('.panel').forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === id); });
+      });
+    });
+  </script>
+</body>
+</html>
