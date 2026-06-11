@@ -1,0 +1,12 @@
+{
+  "name": "@agentic-survey/page-service",
+  "version": "0.0.0",
+  "description": "Stateless render + collect service for the public survey page. Writes to the user's Supabase; persists nothing.",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@agentic-survey/core": "*",
+    "@agentic-survey/schema": "*"
+  }
+}

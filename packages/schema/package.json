@@ -1,0 +1,8 @@
+{
+  "name": "@agentic-survey/schema",
+  "version": "0.0.0",
+  "description": "SQL migration + shared TypeScript types for the survey data model.",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.ts"
+}

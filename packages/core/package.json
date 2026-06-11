@@ -1,0 +1,11 @@
+{
+  "name": "@agentic-survey/core",
+  "version": "0.0.0",
+  "description": "Pure TypeScript service layer for survey logic. No MCP, no HTTP, no framework types.",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@agentic-survey/schema": "*"
+  }
+}
