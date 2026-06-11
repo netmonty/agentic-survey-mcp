@@ -4,5 +4,10 @@
   "description": "SQL migration + shared TypeScript types for the survey data model.",
   "license": "MIT",
   "type": "module",
-  "main": "src/index.ts"
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
 }
