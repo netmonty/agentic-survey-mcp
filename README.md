@@ -2,50 +2,71 @@
 
 An open-source ([MIT](LICENSE)) [MCP](https://modelcontextprotocol.io) server that lets your own AI agent **build surveys and review results** — on **your own Supabase**, so you own all your data.
 
-- **You own the data.** Surveys, questions, and responses live in *your* Supabase project. The author's infrastructure never stores anything.
+- **You own the data.** Surveys, questions, and responses live in *your* Supabase project. The author's infrastructure stores nothing.
 - **You carry the AI cost.** Survey authoring and analysis happen inside *your* agent (Claude, etc.). There is no AI on the server side.
-- **Bring your own keys.** Your Supabase secret key stays in local config on your machine — never transmitted, never logged.
+- **Bring your own keys.** Your Supabase secret key stays in local config on your machine — never transmitted, never logged, never a tool argument. ([trust model](docs/trust-model.md))
 
-> **Status: scaffolding.** This repo is being built per the specs in [`docs/`](docs/). See the [build brief](docs/survey-mcp-build-brief.md) and [project plan](docs/survey-mcp-saas-plan.md).
-
-## Architecture
-
-Three deliberately-separated pieces over one pure service layer:
+## How it works
 
 ```
   Your AI agent ──(MCP / stdio)──▶  mcp-server ──┐
-                                                  ├──▶  core  ──▶  Your Supabase
+                                                  ├──▶  core ──▶  Your Supabase
   Respondent ──(browser)──▶  page-service ───────┘            (store of record)
 ```
 
-1. **`packages/mcp-server`** — the product. Thin MCP tool handlers (stdio transport) over `core`. Talks to *your* Supabase with the keys you supplied.
-2. **Your Supabase** — the store of record, owned entirely by you. The author never touches it.
-3. **`packages/page-service`** — a stateless render + collect service for the public page respondents fill out. Forwards submissions straight into your Supabase; persists nothing.
+1. Your agent calls the **MCP server** to create a survey, add questions, and publish it.
+2. Publishing returns a **share link**. A respondent opens it; the **page-service** renders the form and writes their submission straight into *your* Supabase (it stores nothing itself).
+3. Your agent calls `get_results` and analyses the responses.
 
-Supporting packages:
+## Packages
 
-- **`packages/core`** — pure TypeScript service layer (survey logic). No MCP, no HTTP, no framework types. Single source of truth.
-- **`packages/schema`** — the SQL migration + shared TypeScript types (`Survey`, `Question`, `Response`, `GetResultsPayload`…).
+| Package | What it is |
+|---|---|
+| [`packages/schema`](packages/schema) | The SQL migration + shared TypeScript types (the data model + the `get_results` contract). |
+| [`packages/core`](packages/core) | Pure service layer — all survey logic. No MCP, no HTTP, no framework types. |
+| [`packages/mcp-server`](packages/mcp-server) | The MCP server (stdio) + the `agentic-survey` CLI. 12 tools over `core`. |
+| [`packages/page-service`](packages/page-service) | Stateless Next.js + shadcn page that respondents fill out. Self-hostable. |
 
 ## Quickstart
 
-> Coming with the Phase 1 launch — see [`docs/survey-mcp-build-brief.md`](docs/survey-mcp-build-brief.md) §1.5.
+See **[QUICKSTART.md](QUICKSTART.md)** — install → connect your Supabase → have your agent build a survey → publish → collect → read results.
 
+```bash
+# 1. Install the schema into your Supabase (SQL editor, or `supabase db push`)
+npx agentic-survey init --print-sql
+
+# 2. Store your keys locally + verify (keys are typed into your terminal, never the agent)
+npx agentic-survey init
+
+# 3. Add the printed snippet to your agent (e.g. Claude Desktop) and go:
+#    "Build me a 5-question customer-satisfaction survey and publish it."
 ```
-install  →  init (or agent setup_connection)  →  build a survey via your agent
-         →  publish  →  share link  →  agent reads results
-```
+
+## The MCP tools
+
+`setup_connection`, `create_survey`, `add_question`, `update_question`, `remove_question`,
+`reorder_questions`, `publish_survey`, `get_share_link`, `list_surveys`, `get_survey`,
+`list_responses`, `get_results`.
+
+Question types: `single_choice`, `multi_choice`, `short_text`, `long_text`, `rating`, `yes_no`, `number`.
+
+## Self-hosting the page-service
+
+The MCP server points share links at a default hosted instance, but the endpoint is configurable.
+To run your own, deploy `packages/page-service` (a standard Next.js app) and set the page endpoint
+in your config. See [`packages/page-service/.env.example`](packages/page-service/.env.example).
 
 ## Development
 
-This is an npm-workspaces monorepo (Node ≥ 20).
+npm-workspaces monorepo, Node ≥ 20.
 
 ```bash
 npm install
-npm run build
-npm test
+npm run typecheck          # all packages
+npm test                   # core + mcp-server + page-service lib (needs a test Supabase; see CONTRIBUTING)
+npm run dev --workspace @agentic-survey/page-service   # the public page locally
 ```
 
 ## License
 
-[MIT](LICENSE).
+[MIT](LICENSE). See [CONTRIBUTING.md](CONTRIBUTING.md) to hack on it.

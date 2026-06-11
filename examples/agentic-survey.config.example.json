@@ -1,0 +1,7 @@
+{
+  "_comment": "Example of the local config init writes to ~/.config/agentic-survey/config.json (mode 0600). NEVER commit real keys. The secret key stays on your machine; the publishable key rides in share links.",
+  "supabaseUrl": "https://your-project-ref.supabase.co",
+  "secretKey": "sb_secret_xxxxxxxxxxxxxxxxxxxx",
+  "publishableKey": "sb_publishable_xxxxxxxxxxxxxxxxxxxx",
+  "pageEndpoint": "https://pages.agentic-survey.dev"
+}

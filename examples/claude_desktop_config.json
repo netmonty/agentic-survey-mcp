@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "agentic-survey": {
+      "command": "npx",
+      "args": ["-y", "@agentic-survey/mcp-server"]
+    }
+  }
+}
