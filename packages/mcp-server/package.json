@@ -3,6 +3,30 @@
   "version": "0.1.0",
   "description": "MCP server (stdio) exposing survey tools over core, plus the agentic-survey CLI.",
   "license": "MIT",
+  "author": "Monty Daley <monty@daley.org.nz>",
+  "homepage": "https://www.mcpsurveys.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netmonty/agentic-survey-mcp.git",
+    "directory": "packages/mcp-server"
+  },
+  "bugs": "https://github.com/netmonty/agentic-survey-mcp/issues",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "survey",
+    "surveys",
+    "supabase",
+    "ai-agent",
+    "forms",
+    "cli"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
