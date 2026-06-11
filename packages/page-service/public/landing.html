@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Agentic Survey MCP — your agent builds surveys, you keep the data</title>
+  <title>Agentic Survey MCP: your agent builds surveys, you keep the data</title>
   <meta name="description" content="A free, open-source MCP server that lets your AI agent build surveys and read results, straight into your own Supabase. Your data, your keys, your machine." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -129,13 +129,14 @@
         <a class="btn btn-ghost" href="https://github.com/netmonty/agentic-survey-mcp">Read the source ↗</a>
       </div>
       <div class="term">
-        <div class="term-bar"><i></i><i></i><i></i><span>your terminal</span></div>
-<pre><span class="c"># 1. print the schema, paste it into your Supabase</span>
-npx -y @agentic-survey/mcp-server init --print-sql
+        <div class="term-bar"><i></i><i></i><i></i><span>you, talking to your agent</span></div>
+<pre><span class="c">you ▸</span> build a 5-question product feedback survey and publish it
+<span class="g">agent ▸</span> done. here's the link:
+        https://www.mcpsurveys.com/s/…
 
-<span class="c"># 2. store your keys locally (typed in, never sent anywhere)</span>
-npx -y @agentic-survey/mcp-server init
-<span class="g">✓ connected, schema present</span></pre>
+<span class="c">you ▸</span> how are the responses looking?
+<span class="g">agent ▸</span> 42 responses so far. average rating 4.3, and the
+        comments keep mentioning onboarding…</pre>
       </div>
     </header>
 
@@ -159,18 +160,17 @@ npx -y @agentic-survey/mcp-server init
 
     <section id="quickstart">
       <p class="sec-label">quick start</p>
-      <h2>Hook up your agent in about two minutes</h2>
-      <p class="sec-intro">Works with any MCP-capable client. Connect your Supabase first (above), then point your client at the server.</p>
+      <h2>Get going in four steps</h2>
+      <p class="sec-intro">You'll need a free <a href="https://supabase.com" style="color:var(--accent)">Supabase</a> project (that's where your data lives) and any MCP client (Claude Code, Claude Desktop, Cursor, and so on). About two minutes start to finish.</p>
 
       <div class="step">
         <div class="num">1</div>
         <div class="body">
-          <h3>Install the schema and store your keys</h3>
-          <p>Run this in your terminal. Your keys are typed in and saved locally, never sent to the agent.</p>
+          <h3>Create the database tables</h3>
+          <p>This prints some SQL. Copy it into your Supabase SQL editor and run it once, to set up the tables your surveys live in.</p>
           <div class="codeblock">
-            <button class="copy" data-copy="npx -y @agentic-survey/mcp-server init">Copy</button>
-<pre><span class="cm"># paste the printed SQL into the Supabase SQL editor, then:</span>
-npx -y @agentic-survey/mcp-server init</pre>
+            <button class="copy" data-copy="npx -y @agentic-survey/mcp-server init --print-sql">Copy</button>
+<pre>npx -y @agentic-survey/mcp-server init --print-sql</pre>
           </div>
         </div>
       </div>
@@ -178,8 +178,20 @@ npx -y @agentic-survey/mcp-server init</pre>
       <div class="step">
         <div class="num">2</div>
         <div class="body">
-          <h3>Point your client at the server</h3>
-          <p>Pick your client:</p>
+          <h3>Save your Supabase keys</h3>
+          <p>It asks for your project URL and keys, then saves them in a file on your own machine. They're never sent to the agent or to me.</p>
+          <div class="codeblock">
+            <button class="copy" data-copy="npx -y @agentic-survey/mcp-server init">Copy</button>
+<pre>npx -y @agentic-survey/mcp-server init</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div class="body">
+          <h3>Connect it to your AI client</h3>
+          <p>Pick your client and add the server:</p>
           <div class="tabs">
             <button class="tab active" data-tab="cc">Claude Code</button>
             <button class="tab" data-tab="cd">Claude Desktop</button>
@@ -225,10 +237,10 @@ npx -y @agentic-survey/mcp-server init</pre>
       </div>
 
       <div class="step">
-        <div class="num">3</div>
+        <div class="num">4</div>
         <div class="body">
-          <h3>Just talk to it</h3>
-          <p>The agent chains the tools for you: <span class="mono" style="color:var(--accent)">create_survey, add_question, publish_survey, get_results</span>.</p>
+          <h3>Ask your agent to build a survey</h3>
+          <p>That's the setup done. Now just ask in plain English and it handles the rest, chaining its tools for you.</p>
           <div class="codeblock">
             <button class="copy" data-copy="Build a 4-question customer-satisfaction survey with a 1-5 rating, a yes/no, a multiple choice, and an open comment. Publish it and give me the share link.">Copy</button>
 <pre>"Build a 4-question customer-satisfaction survey with a 1-5 rating,
