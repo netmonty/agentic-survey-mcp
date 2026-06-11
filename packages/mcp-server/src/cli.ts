@@ -86,15 +86,30 @@ async function runInit(flags: Record<string, string | boolean>) {
   const publishableKey =
     (flags['publishable-key'] as string) ||
     (await ask(
-      `Supabase publishable key (sb_publishable_…, optional${existing.publishableKey ? ', set' : ''}): `,
+      `Supabase publishable key (sb_publishable_…, needed for share links${existing.publishableKey ? ', already set' : ''}): `,
     )) ||
     existing.publishableKey ||
     '';
-  const pageEndpoint =
-    (flags['page-endpoint'] as string) ||
-    (await ask(`Page-service endpoint [${existing.pageEndpoint ?? DEFAULT_PAGE_ENDPOINT}]: `)) ||
-    existing.pageEndpoint ||
-    DEFAULT_PAGE_ENDPOINT;
+
+  // Page-service: the domain published survey links point at. Default to the
+  // hosted instance; let people opt into their own self-hosted/custom domain.
+  let pageEndpoint = (flags['page-endpoint'] as string) || '';
+  if (!pageEndpoint) {
+    const current = existing.pageEndpoint ?? DEFAULT_PAGE_ENDPOINT;
+    console.log('\nWhich domain do you want your surveys to appear on?');
+    console.log(`  1. ${DEFAULT_PAGE_ENDPOINT}/s/your-survey   (default, quick start)`);
+    console.log('  2. A custom domain (your own self-hosted page-service)');
+    const choice = (await ask(`Choose 1 or 2 [keep ${current}]: `)).trim();
+    if (choice === '1') {
+      pageEndpoint = DEFAULT_PAGE_ENDPOINT;
+    } else if (choice === '2') {
+      pageEndpoint =
+        (await ask('Your page-service base URL (e.g. https://surveys.example.com): ')).trim() ||
+        current;
+    } else {
+      pageEndpoint = current; // Enter keeps the shown default
+    }
+  }
 
   if (!supabaseUrl || !secretKey) {
     console.error('\nA project URL and secret key are required. Aborting.');
@@ -124,6 +139,12 @@ async function runInit(flags: Record<string, string | boolean>) {
     console.log('     2) `supabase db push`, or apply via the Supabase MCP.');
   } else {
     console.log(`\n✓ Connected. Schema present (${probe.data.length} survey(s)).`);
+  }
+
+  if (!publishableKey) {
+    console.log(
+      "\n⚠  No publishable key set. Share links and response collection won't work until you add one (re-run init).",
+    );
   }
 
   printAgentSnippet();
