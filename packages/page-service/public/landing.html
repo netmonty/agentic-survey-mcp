@@ -195,6 +195,7 @@
           <div class="tabs">
             <button class="tab active" data-tab="cc">Claude Code</button>
             <button class="tab" data-tab="cd">Claude Desktop</button>
+            <button class="tab" data-tab="codex">Codex</button>
             <button class="tab" data-tab="other">Cursor / other</button>
           </div>
           <div class="panel active" data-panel="cc">
@@ -216,6 +217,17 @@
     <span class="st">"agentic-survey"</span>: { <span class="st">"command"</span>: <span class="st">"npx"</span>, <span class="st">"args"</span>: [<span class="st">"-y"</span>, <span class="st">"@agentic-survey/mcp-server"</span>] }
   }
 }</pre>
+            </div>
+          </div>
+          <div class="panel" data-panel="codex">
+            <div class="codeblock">
+              <button class="copy" data-copy='[mcp_servers.agentic-survey]
+command = "npx"
+args = ["-y", "@agentic-survey/mcp-server"]'>Copy</button>
+<pre><span class="cm"># ~/.codex/config.toml</span>
+[mcp_servers.agentic-survey]
+command = <span class="st">"npx"</span>
+args = [<span class="st">"-y"</span>, <span class="st">"@agentic-survey/mcp-server"</span>]</pre>
             </div>
           </div>
           <div class="panel" data-panel="other">
