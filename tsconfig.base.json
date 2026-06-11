@@ -5,10 +5,17 @@
     "moduleResolution": "NodeNext",
     "lib": ["ES2022"],
     "declaration": true,
+    "composite": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "baseUrl": ".",
+    "paths": {
+      "@agentic-survey/schema": ["packages/schema/src/index.ts"],
+      "@agentic-survey/core": ["packages/core/src/index.ts"],
+      "@agentic-survey/mcp-server": ["packages/mcp-server/src/index.ts"]
+    }
   }
 }

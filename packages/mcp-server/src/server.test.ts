@@ -9,7 +9,7 @@ const SB_URL = process.env.SUPABASE_URL;
 const SB_SECRET = process.env.SUPABASE_SECRET_KEY;
 const skip = !SB_URL || !SB_SECRET ? 'set SUPABASE_URL + SUPABASE_SECRET_KEY to run' : false;
 
-const serverEntry = fileURLToPath(new URL('./index.ts', import.meta.url));
+const serverEntry = fileURLToPath(new URL('./cli.ts', import.meta.url));
 
 let client: Client;
 const createdSurveyIds: string[] = [];

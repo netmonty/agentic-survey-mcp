@@ -33,14 +33,16 @@ See **[QUICKSTART.md](QUICKSTART.md)** — install → connect your Supabase →
 
 ```bash
 # 1. Install the schema into your Supabase (SQL editor, or `supabase db push`)
-npx agentic-survey init --print-sql
+npx -y @agentic-survey/mcp-server init --print-sql
 
 # 2. Store your keys locally + verify (keys are typed into your terminal, never the agent)
-npx agentic-survey init
+npx -y @agentic-survey/mcp-server init
 
 # 3. Add the printed snippet to your agent (e.g. Claude Desktop) and go:
 #    "Build me a 5-question customer-satisfaction survey and publish it."
 ```
+
+> Tip: `npm i -g @agentic-survey/mcp-server` gives you the shorter `agentic-survey init` command.
 
 ## The MCP tools
 

@@ -2,6 +2,7 @@
 import readline from 'node:readline';
 import { readInitialMigrationSql } from '@agentic-survey/schema';
 import { createDb, listSurveys, isErr } from '@agentic-survey/core';
+import { runServer } from './index.js';
 import {
   saveConfig,
   loadConfig,
@@ -132,12 +133,18 @@ async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
   const flags = parseFlags(rest);
   switch (cmd) {
+    // Default (no command) = serve: this is what the agent launches via the MCP config.
     case undefined:
+    case 'serve':
+      await runServer();
+      break;
     case 'init':
       await runInit(flags);
       break;
     default:
-      console.error(`Unknown command: ${cmd}\nUsage: agentic-survey init [--print-sql]`);
+      console.error(
+        `Unknown command: ${cmd}\nUsage:\n  agentic-survey            start the MCP server (stdio)\n  agentic-survey init [--print-sql]   set up / print schema SQL`,
+      );
       process.exitCode = 1;
   }
 }

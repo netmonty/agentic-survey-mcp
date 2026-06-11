@@ -1,22 +1,33 @@
 {
   "name": "@agentic-survey/mcp-server",
-  "version": "0.0.0",
-  "description": "MCP server (stdio) exposing survey tools over core. Includes the CLI `init`.",
+  "version": "0.1.0",
+  "description": "MCP server (stdio) exposing survey tools over core, plus the agentic-survey CLI.",
   "license": "MIT",
   "type": "module",
-  "main": "src/index.ts",
-  "bin": {
-    "agentic-survey": "src/cli.ts"
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
+  "bin": {
+    "agentic-survey": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -b",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "start": "node --import tsx src/index.ts",
-    "test": "node --import tsx --env-file-if-exists=../../.env --test src/**/*.test.ts"
+    "start": "node --import tsx src/cli.ts",
+    "test": "node --import tsx --env-file-if-exists=../../.env --test src/**/*.test.ts",
+    "prepublishOnly": "tsc -b"
   },
   "dependencies": {
-    "@agentic-survey/core": "*",
-    "@agentic-survey/schema": "*",
+    "@agentic-survey/core": "^0.1.0",
+    "@agentic-survey/schema": "^0.1.0",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "zod": "^3.23.0"
   }

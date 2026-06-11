@@ -24,7 +24,7 @@ The tool doesn't run schema changes itself (your project API key can't run DDL).
 
 ```bash
 # Print the SQL and paste it into the Supabase SQL editor:
-npx agentic-survey init --print-sql
+npx -y @agentic-survey/mcp-server init --print-sql
 
 # …or, if you use the Supabase CLI:
 supabase db push
@@ -35,7 +35,7 @@ This creates four tables (`surveys`, `questions`, `responses`, `answers`) with r
 ## 3. Connect (keys stay on your machine)
 
 ```bash
-npx agentic-survey init
+npx -y @agentic-survey/mcp-server init
 ```
 
 It prompts for your URL + keys (the secret key is typed into a **hidden** prompt), writes them to
