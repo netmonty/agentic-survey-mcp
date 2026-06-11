@@ -1,6 +1,6 @@
 {
   "name": "@agentic-survey/schema",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SQL migration + shared TypeScript types for the survey data model.",
   "license": "MIT",
   "author": "Monty Daley <monty@daley.org.nz>",

@@ -1,6 +1,6 @@
 {
   "name": "@agentic-survey/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pure TypeScript service layer for survey logic. No MCP, no HTTP, no framework types.",
   "license": "MIT",
   "author": "Monty Daley <monty@daley.org.nz>",
