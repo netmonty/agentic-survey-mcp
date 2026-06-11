@@ -4,9 +4,13 @@
   "description": "Stateless render + collect service for the public survey page. Writes to the user's Supabase; persists nothing.",
   "license": "MIT",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "src/lib/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --env-file-if-exists=../../.env --test src/**/*.test.ts"
+  },
   "dependencies": {
-    "@agentic-survey/core": "*",
-    "@agentic-survey/schema": "*"
+    "@agentic-survey/schema": "*",
+    "@supabase/supabase-js": "^2.45.0"
   }
 }
