@@ -14,7 +14,23 @@ export function createPublicClient(supabaseUrl: string, publishableKey: string):
   });
 }
 
+/**
+ * Supabase project refs are exactly 20 lowercase alphanumerics. Validating
+ * before interpolation stops a crafted `ref` (e.g. containing `/`, `#`, `@`)
+ * from pointing the URL host somewhere other than *.supabase.co — i.e. it
+ * closes an SSRF on the server-side submit path and constrains rendering to
+ * genuine Supabase projects.
+ */
+const PROJECT_REF = /^[a-z0-9]{20}$/;
+
+export function isValidProjectRef(ref: unknown): ref is string {
+  return typeof ref === 'string' && PROJECT_REF.test(ref);
+}
+
 /** Cloud projects: reconstruct the URL from a project ref carried in the link. */
 export function urlFromRef(projectRef: string): string {
+  if (!isValidProjectRef(projectRef)) {
+    throw new Error('Invalid Supabase project ref.');
+  }
   return `https://${projectRef}.supabase.co`;
 }

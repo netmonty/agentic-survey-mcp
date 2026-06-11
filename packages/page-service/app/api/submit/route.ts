@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import {
   createPublicClient,
   urlFromRef,
+  isValidProjectRef,
   fetchPublishedSurvey,
   submitResponse,
   validateSubmission,
@@ -32,6 +33,9 @@ export async function POST(req: Request) {
   const { ref, key, surveyId, answers, turnstileToken } = body ?? {};
   if (!ref || !key || !surveyId || !Array.isArray(answers)) {
     return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
+  }
+  if (!isValidProjectRef(ref)) {
+    return NextResponse.json({ error: 'Invalid project ref.' }, { status: 400 });
   }
 
   if (!(await verifyTurnstile(turnstileToken, ip))) {

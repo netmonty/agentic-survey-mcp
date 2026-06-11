@@ -1,6 +1,6 @@
 'use client';
 import { use, useEffect, useState } from 'react';
-import { createPublicClient, urlFromRef, fetchPublishedSurvey, type PublicSurvey } from '@data';
+import { createPublicClient, urlFromRef, isValidProjectRef, fetchPublishedSurvey, type PublicSurvey } from '@data';
 import { SurveyForm } from '@/components/survey-form';
 
 type State = 'loading' | 'nokey' | 'notfound' | 'ready';
@@ -19,6 +19,10 @@ export default function SurveyPage({ params }: { params: Promise<{ ref: string; 
     const key = m ? decodeURIComponent(m[1]) : '';
     if (!key) {
       setState('nokey');
+      return;
+    }
+    if (!isValidProjectRef(ref)) {
+      setState('notfound');
       return;
     }
     setPublishableKey(key);
