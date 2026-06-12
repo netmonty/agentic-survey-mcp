@@ -1,7 +1,8 @@
-# CLAUDE.md — agent handoff & project state
+# CLAUDE.md — project guide
 
-Read this first. It captures what this project is, what's built, how to run/deploy it,
-the decisions already made (don't re-litigate them), and what's left.
+Guidance for anyone — human or agent — working in this repo. It captures what the
+project is, how it's laid out, how to build/test/run it, and the architectural decisions
+already made (so they aren't re-litigated).
 
 ## What this is
 
@@ -11,16 +12,13 @@ own their data (own Supabase), carry their own AI cost (own agent), and their se
 never leaves their machine. A stateless Next.js page-service renders the public survey
 page respondents fill out and writes submissions straight into the user's Supabase.
 
+By default the MCP server points at a maintainer-hosted page-service, so anyone can
+publish share links out of the box. Self-hosters can point it at their own deployment
+with `init --page-endpoint`.
+
 Full specs: [`docs/survey-mcp-build-brief.md`](docs/survey-mcp-build-brief.md),
 [`docs/survey-mcp-saas-plan.md`](docs/survey-mcp-saas-plan.md),
 [`docs/trust-model.md`](docs/trust-model.md), [`docs/spike-findings.md`](docs/spike-findings.md).
-
-## Repos
-
-- **`netmonty/agentic-survey-mcp`** (this repo) — the open-source product. Currently
-  **private**; goes public at launch.
-- **`netmonty/agentic-survey-site`** (private, at `~/agentic-survey-site`) — the
-  hosted/ops side: deploy runbook, hosted-env template, future landing/billing.
 
 ## Layout (npm workspaces monorepo, Node ≥ 20)
 
@@ -33,16 +31,15 @@ docs/                  build brief, saas plan, trust model, spike findings
 examples/              claude_desktop_config.json, sample config, sample-survey prompts
 ```
 
-## Status — what's done
+## Status — what's built
 
 - ✅ **schema**: migration applied + verified; RLS proven (see spike findings).
 - ✅ **core**: all functions + `get_results` aggregation; integration tests pass.
 - ✅ **mcp-server**: 14 tools, CLI `init` (default cmd = serve the stdio server; `init` = setup), stdio smoke test passes.
 - ✅ **page-service**: Next 16 + shadcn UI, all 10 question types (incl. date/time/slider) + dropdown variant, two themes, themed number stepper; lib spike test passes.
-- ✅ **branching / skip logic**: `questions.logic` now typed (`QuestionLogic`); `set_question_logic` + `validate_survey` tools; shared evaluator (`page-service/src/lib/logic.ts`) drives live show/hide and visibility-aware submission validation (hidden questions aren't required; answers to hidden questions rejected). Conditions reference earlier questions only. DB-less unit tests in `logic.test.ts` / `lint.test.ts`.
+- ✅ **branching / skip logic**: `questions.logic` is typed (`QuestionLogic`); `set_question_logic` + `validate_survey` tools; a shared evaluator (`page-service/src/lib/logic.ts`) drives live show/hide and visibility-aware submission validation (hidden questions aren't required; answers to hidden questions are rejected). Conditions reference earlier questions only. DB-less unit tests in `logic.test.ts` / `lint.test.ts`.
 - ✅ **date / time / slider question types**: date (`YYYY-MM-DD`), time (24-hour `HH:MM`), slider (numeric, defaults 0–100 `%`). Slider aggregates as numeric; date/time as text. Fresh installs get them from the updated `0001_init.sql`; **existing deployments must run `migrations/0002_add_question_types.sql`** (it alters the `questions.type` check constraint).
 - ✅ **packaging**: schema/core/mcp-server build to `dist` via `tsc -b` (project references); publishable; `bin` → `dist/cli.js`. (page-service is deployed, not npm-published.)
-- ✅ **deployed**: page-service live at **https://agentic-survey-pages.vercel.app** — `/` = marketing landing, `/s/[ref]/[surveyId]` = survey, `/api/submit` = collect. Verified end-to-end with a real submission.
 
 ## Run it locally
 
@@ -55,41 +52,31 @@ npm run dev --workspace @agentic-survey/page-service          # editorial theme
 BRAND_THEME=charcoal npm run dev --workspace @agentic-survey/page-service
 ```
 
-Tests run via **tsx + node:test** and read Supabase creds from the gitignored root
-`.env` (loaded with `--env-file-if-exists`). They create + clean up their own data.
+## Testing against Supabase
 
-## The test Supabase project (THROWAWAY — rotate/delete)
+Tests run via **tsx + node:test** and read Supabase creds from a gitignored root `.env`
+(loaded with `--env-file-if-exists`). Use your **own throwaway** Supabase project — never
+a shared or production one. Create a free project, run
+`packages/schema/migrations/0001_init.sql` against it, and put its URL + `sb_secret_…` key
+in `.env`. See [`CONTRIBUTING.md`](CONTRIBUTING.md). Tests create and clean up their own data.
 
-- Project ref: **`hewkkeyjbbaetmimrawy`** (`https://hewkkeyjbbaetmimrawy.supabase.co`), Sydney, free tier.
-- Keys live in the gitignored **`.env`** at the repo root (URL + `sb_publishable_…` + `sb_secret_…`).
-- Demo survey "Published Survey" `id = 3106ccbc-121d-4d63-93c5-8791c14ce350` has all 7
-  question types + a dropdown single_choice; plus a hidden draft survey.
-- ⚠️ **These keys were shared in chat and are in `.env`. Rotate or delete this project before/at launch.** It's only for dev/demo.
-- A Supabase MCP is connected in-session (used for the schema migration + RLS spike).
+## Self-hosting the page-service
 
-## Deploying the page-service (Vercel)
+`packages/page-service` (Next 16) is a standalone, deployable app and **holds no Supabase
+keys** — the client-safe publishable key arrives with each share link, and submissions
+write directly to the survey owner's Supabase. Deploy it to any Next-capable host with:
 
-**Use prebuilt deploys.** Vercel's server-side build of this monorepo fails in its
-lint/type step (undiagnosed; logs unavailable post-failure). Building locally and
-uploading the output is reliable and what's in use:
-
-```bash
-cd ~/agentic-survey-mcp
-npx vercel@latest build --prod
-npx vercel@latest deploy --prebuilt --prod --yes
-```
-
-- Vercel project: **`agentic-survey-pages`** (team `montys-projects-af92f16b`,
-  `prj_LQG0RtGELGjMSGMCP10NLYhMhklC`). CLI is already logged in on this machine
-  (`.vercel/` in repo, gitignored).
-- Project settings set via API: `rootDirectory = packages/page-service`,
-  `framework = nextjs`, **deployment protection OFF** (the survey page must be public).
-- Optional env (Vercel dashboard): `BRAND_THEME` (`editorial`|`charcoal`), `BRAND_NAME`,
-  `BRAND_URL`, `TURNSTILE_SECRET_KEY` + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`.
-- Full runbook: `~/agentic-survey-site/deploy/page-service.md`.
+- project root set to `packages/page-service`, framework Next.js,
+- public access (no deployment protection — the survey page must be reachable by
+  respondents),
+- optional env: `BRAND_THEME` (`editorial`|`charcoal`), `BRAND_NAME`, `BRAND_URL`,
+  `TURNSTILE_SECRET_KEY` + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`.
 
 The landing page is `packages/page-service/public/landing.html` (static), served at `/`
 via a `next.config` rewrite. Edit it there and redeploy.
+
+> The deploy runbook for the default maintainer-hosted instance, plus hosting/ops config,
+> lives in a separate private repo and is not part of the open-source product.
 
 ## Decisions already made (don't redo)
 
@@ -103,62 +90,49 @@ via a `next.config` rewrite. Edit it there and redeploy.
     applies SELECT policies to RETURNING; responses/answers have no anon SELECT policy).
   - the **answers insert policy validates via the question's survey**, not via responses
     (anon can't read responses); the FK enforces the response link.
-- **Keys**: secret key is NEVER a tool argument — stored locally via `init`; tools read
-  it from local config/env. Migration is run **out of band** (SQL editor / `supabase db
-  push` / Supabase MCP) — the product holds no management token.
+- **Keys**: the secret key is NEVER a tool argument — it's stored locally via `init`, and
+  tools read it from local config/env. Migration is run **out of band** (SQL editor /
+  `supabase db push` / Supabase MCP) — the product holds no management token.
 - **page-service is self-contained**: it mirrors the few schema types locally
   (`src/lib/types.ts`) instead of importing `@agentic-survey/schema`, so it builds
-  standalone as a deployable app. Keep these in sync with packages/schema.
+  standalone as a deployable app. Keep these in sync with `packages/schema`.
 - **Themes**: two built-in, selected by `BRAND_THEME` env — `editorial` (warm paper +
   Fraunces/Hanken + clay) and `charcoal` (monochrome charcoal/white + Geist + compact).
-- **Deploy**: prebuilt (above). **Next 16 + React 19** (cleared the Next DoS advisories).
-
-## What's left for launch (all your-call / outward-facing)
-
-1. **Publish to npm** — `@agentic-survey/schema`, `@agentic-survey/core`,
-   `@agentic-survey/mcp-server` (packaging ready; `npm publish` per package, schema
-   first). Then `npx @agentic-survey/mcp-server init` works for everyone.
-2. **Make `agentic-survey-mcp` public** — the reputation event.
-3. **LinkedIn URL** — `public/landing.html` footer has a placeholder
-   `https://www.linkedin.com/in/YOUR-HANDLE`; swap it and redeploy.
-4. **Rotate/delete the throwaway Supabase project** + the keys in `.env`.
-5. Optional: custom domain on the page-service; Cloudflare Turnstile keys; env-gate the
-   landing footer's personal links so self-hosters get a neutral page (deferred — would
-   need server-rendering the landing or a build-time template).
+- **Runtime**: **Next 16 + React 19** (cleared the Next DoS advisories).
 
 ## Security posture (hosted page-service)
 
-The hosted page-service at **mcpsurveys.com** is an **open, ungated, multi-tenant
-renderer**: anyone with their own Supabase + this schema can serve their published
-surveys at `/s/<ref>/<id>#k=<key>` on the domain, no account/permission needed. This
-is by design (stateless self-hostable page), but it means strangers can host
-**plain-text phishing/social-engineering content** under the domain. (Code injection
-is *not* a risk — React escapes all author text, no `dangerouslySetInnerHTML`.) Their
-submissions write to **their own** DB; no risk to your data or keys.
+The hosted page-service is an **open, ungated, multi-tenant renderer**: anyone with their
+own Supabase + this schema can serve their published surveys at
+`/s/<ref>/<id>#k=<key>`, no account or permission needed. This is by design (a stateless,
+self-hostable page), but it means strangers can host **plain-text phishing /
+social-engineering content** under a shared hosted domain. (Code injection is *not* a
+risk — React escapes all author text; no `dangerouslySetInnerHTML`.) Submissions write to
+**the author's own** DB; there's no risk to the host's data or keys.
 
-- **Decision (launch posture): open + minimal hardening now**, denylist/reporting later.
-- **Shipped** (`c520397`): `ref` validated against `^[a-z0-9]{20}$` before URL
-  interpolation (closes a server-side SSRF on `/api/submit` + constrains rendering to
-  real Supabase projects); security headers — `X-Frame-Options`/CSP `frame-ancestors`
-  (clickjacking), `nosniff`, `Referrer-Policy` globally, strict CSP + `noindex` on `/s/*`.
-  **Not deployed yet** — needs a prebuilt redeploy; verify with `curl -I https://www.mcpsurveys.com/s/x`.
-- **Still open**: enable Turnstile (set `TURNSTILE_SECRET_KEY` + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
-  on Vercel — code already supports it); a ref **denylist** + abuse-report route to pull
-  bad surveys fast; move the in-memory per-IP rate limiter (10/min, resets per serverless
-  instance — weak) to a shared store (Upstash) or rely on Vercel WAF.
-- **If abuse appears**, the fast lever is locking the hosted instance to an allowlist of
-  your own project ref(s) and pushing everyone else to self-host (`init --page-endpoint`).
+- **Launch posture: open + minimal hardening**, with denylist/reporting deferred.
+- **Shipped hardening**: `ref` is validated against `^[a-z0-9]{20}$` before URL
+  interpolation (closes a server-side SSRF on `/api/submit` and constrains rendering to
+  real Supabase projects); security headers — `X-Frame-Options` / CSP `frame-ancestors`
+  (clickjacking), `nosniff`, `Referrer-Policy` globally, plus a strict CSP and `noindex`
+  on `/s/*`.
+- **Still open**: enable Turnstile (set the two env vars; code already supports it); a ref
+  **denylist** + abuse-report route to pull bad surveys fast; move the in-memory per-IP
+  rate limiter (10/min, resets per serverless instance — weak) to a shared store or rely
+  on a platform WAF.
+- **Fast lever if abuse appears**: lock a hosted instance to an allowlist of known project
+  ref(s) and push everyone else to self-host (`init --page-endpoint`).
 
-## npm publish
+## Publishing the packages
 
-Packages are publish-ready (`957feb1`): `publishConfig.access=public`, repo/homepage/
-keywords metadata, per-package README + LICENSE, `prepublishOnly: tsc -b`. Publish as
-**netmonty** (owns the `@agentic-survey` org), 2FA-enforced so each needs `--otp`, in
-dependency order: **schema → core → mcp-server**.
+Packages are publish-ready: `publishConfig.access=public`, repo/homepage/keywords
+metadata, per-package README + LICENSE, `prepublishOnly: tsc -b`. Publish in dependency
+order: **schema → core → mcp-server**. After publish, `npx @agentic-survey/mcp-server init`
+works for everyone.
 
 ## Gotchas
 
 - `dist/` and `.next/` are gitignored; build with `npm run build` (publishable pkgs) /
   `next build` (page-service). Tests don't need a build (tsx resolves via tsconfig paths).
-- Don't `cd` inside a single Bash compound command unless needed (permission prompts).
-- Vercel build logs are empty once a build errors — only the dashboard shows them.
+- Some hosts' server-side build of this monorepo can fail in the lint/type step; building
+  locally and deploying the prebuilt output is a reliable fallback.
