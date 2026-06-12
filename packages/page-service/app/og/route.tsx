@@ -1,9 +1,11 @@
 import { ImageResponse } from 'next/og';
 
-// Social link-preview image for the landing page (mcpsurveys.com).
-// Rendered to a 1200×630 PNG on request. Referenced from public/landing.html's
-// og:image / twitter:image meta tags. No external fonts — uses the default.
-export const dynamic = 'force-static';
+// Social link-preview image, rendered to a 1200×630 PNG on request.
+// Two modes:
+//   • no params  → the landing-page card (public/landing.html references this)
+//   • ?title=…   → a per-survey card showing the survey's name (used by the
+//                  /s/… share links' og:image / twitter:image tags)
+// No external fonts — uses the default sans.
 export const contentType = 'image/png';
 
 const ACCENT = '#c98a5b';
@@ -11,7 +13,14 @@ const BG = '#101113';
 const TEXT = '#e9e8e4';
 const MUTED = '#8c8d92';
 
-export function GET() {
+export function GET(req: Request) {
+  const raw = new URL(req.url).searchParams.get('title')?.trim();
+  const title = raw ? raw.slice(0, 150) : '';
+  // Scale the headline down as the title gets longer so it stays on-canvas.
+  const headline = title || 'Agentic Surveys';
+  const headlineSize = title ? (title.length > 60 ? 60 : title.length > 30 ? 80 : 104) : 116;
+  const subtitle = title ? 'Survey invitation' : 'made by Monty';
+
   return new ImageResponse(
     (
       <div
@@ -43,11 +52,22 @@ export function GET() {
           </div>
         </div>
 
-        <div style={{ fontSize: 116, fontWeight: 800, color: TEXT, letterSpacing: -3, lineHeight: 1 }}>
-          Agentic Surveys
+        <div
+          style={{
+            display: 'flex',
+            maxWidth: 1000,
+            textAlign: 'center',
+            fontSize: headlineSize,
+            fontWeight: 800,
+            color: TEXT,
+            letterSpacing: -3,
+            lineHeight: 1.05,
+          }}
+        >
+          {headline}
         </div>
 
-        <div style={{ fontSize: 44, color: ACCENT, marginTop: 28, fontWeight: 600 }}>made by Monty</div>
+        <div style={{ fontSize: 44, color: ACCENT, marginTop: 28, fontWeight: 600 }}>{subtitle}</div>
 
         <div style={{ position: 'absolute', bottom: 48, fontSize: 24, color: MUTED, letterSpacing: 1 }}>
           mcpsurveys.com

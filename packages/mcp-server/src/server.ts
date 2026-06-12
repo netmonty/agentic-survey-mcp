@@ -364,7 +364,9 @@ export function buildServer(): McpServer {
       }
       const link = linkConfig(c.cfg);
       if (!link) return fail('no_publishable_key', 'No publishable key configured; re-run `init`.');
-      return ok('Share link ready.', { shareUrl: buildShareUrl(link, surveyId) });
+      return ok('Share link ready.', {
+        shareUrl: buildShareUrl(link, surveyId, r.data.survey.title),
+      });
     },
   );
 

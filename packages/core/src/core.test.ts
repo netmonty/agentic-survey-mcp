@@ -118,7 +118,7 @@ test('publishSurvey builds a share URL when link config is supplied', { skip }, 
   );
   assert.equal(
     published.shareUrl,
-    `https://pages.example.com/s/abc123/${survey.id}#k=sb_publishable_xyz`,
+    `https://pages.example.com/s/abc123/${survey.id}?t=Share%20link%20test#k=sb_publishable_xyz`,
   );
 });
 

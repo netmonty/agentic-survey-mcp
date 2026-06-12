@@ -1,61 +1,47 @@
-'use client';
-import { use, useEffect, useState } from 'react';
-import { createPublicClient, urlFromRef, isValidProjectRef, fetchPublishedSurvey, type PublicSurvey } from '@data';
-import { SurveyForm } from '@/components/survey-form';
+import type { Metadata } from 'next';
+import { getBrand } from '@/lib/branding';
+import { SurveyClient } from './survey-client';
 
-type State = 'loading' | 'nokey' | 'notfound' | 'ready';
-
-export default function SurveyPage({ params }: { params: Promise<{ ref: string; surveyId: string }> }) {
-  // Next 16: route params are async; unwrap with React's use().
-  const { ref, surveyId } = use(params);
-  const [state, setState] = useState<State>('loading');
-  const [data, setData] = useState<PublicSurvey | null>(null);
-  const [publishableKey, setPublishableKey] = useState('');
-
-  useEffect(() => {
-    // The publishable key rides in the URL fragment (#k=…) — client-only, never
-    // sent to this server on page load.
-    const m = window.location.hash.match(/k=([^&]+)/);
-    const key = m ? decodeURIComponent(m[1]) : '';
-    if (!key) {
-      setState('nokey');
-      return;
-    }
-    if (!isValidProjectRef(ref)) {
-      setState('notfound');
-      return;
-    }
-    setPublishableKey(key);
-    const client = createPublicClient(urlFromRef(ref), key);
-    fetchPublishedSurvey(client, surveyId)
-      .then((res) => {
-        if (!res) {
-          setState('notfound');
-          return;
-        }
-        setData(res);
-        setState('ready');
-      })
-      .catch(() => setState('notfound'));
-  }, [ref, surveyId]);
-
-  if (state === 'loading') return <Centered>Loading…</Centered>;
-  if (state === 'nokey') return <Centered>This link is missing its access key.</Centered>;
-  if (state === 'notfound') return <Centered>Survey not found, or not published.</Centered>;
-  return (
-    <SurveyForm
-      projectRef={ref}
-      publishableKey={publishableKey}
-      survey={data!.survey}
-      questions={data!.questions}
-    />
-  );
+// This service's own origin, so the /og image resolves to an absolute URL in
+// the OpenGraph/Twitter tags. On Vercel these env vars are populated
+// automatically; locally we fall back to the dev server.
+function metadataBase(): URL {
+  const host = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+  return new URL(host ? `https://${host}` : 'http://localhost:3000');
 }
 
-function Centered({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="animate-fade-up rounded-2xl border border-border bg-card px-8 py-16 text-center text-muted-foreground shadow-card">
-      {children}
-    </div>
-  );
+// Server-rendered so link-preview crawlers (which don't run JS and never see
+// the #k= fragment) get a real title + image. The survey name arrives in the
+// ?t= query param, set by the share-link builder — no key, no data fetch.
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ t?: string }>;
+}): Promise<Metadata> {
+  const { t } = await searchParams;
+  const brand = getBrand();
+  const title = t?.trim() || 'Survey';
+  const description = `You're invited to complete this survey — powered by ${brand.name}.`;
+  const image = `/og?title=${encodeURIComponent(title)}`;
+  return {
+    metadataBase: metadataBase(),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      images: [{ url: image, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
+  };
+}
+
+export default function SurveyPage({ params }: { params: Promise<{ ref: string; surveyId: string }> }) {
+  return <SurveyClient params={params} />;
 }

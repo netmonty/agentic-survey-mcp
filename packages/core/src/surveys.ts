@@ -57,7 +57,7 @@ export async function publishSurvey(
       .single();
     if (error) return err('publish_survey_failed', error.message);
     const survey = toSurvey(data);
-    return ok({ survey, shareUrl: link ? buildShareUrl(link, survey.id) : undefined });
+    return ok({ survey, shareUrl: link ? buildShareUrl(link, survey.id, survey.title) : undefined });
   } catch (e) {
     return fromThrown('publish_survey_failed', e);
   }

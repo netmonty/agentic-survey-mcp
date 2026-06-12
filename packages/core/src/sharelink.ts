@@ -12,8 +12,12 @@ export interface LinkConfig {
   publishableKey: string;
 }
 
-export function buildShareUrl(link: LinkConfig, surveyId: string): string {
+export function buildShareUrl(link: LinkConfig, surveyId: string, title?: string): string {
   const base = link.pageEndpoint.replace(/\/+$/, '');
   const key = encodeURIComponent(link.publishableKey);
-  return `${base}/s/${link.projectRef}/${surveyId}#k=${key}`;
+  // The survey title rides in the query string (server-visible, unlike the
+  // fragment) so link-preview crawlers can render it as the card title without
+  // ever needing the key. Capped to keep URLs sane; previews truncate anyway.
+  const t = title?.trim() ? `?t=${encodeURIComponent(title.trim().slice(0, 150))}` : '';
+  return `${base}/s/${link.projectRef}/${surveyId}${t}#k=${key}`;
 }
