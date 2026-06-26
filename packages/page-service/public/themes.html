@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Themes — Agentic Survey MCP</title>
+  <meta name="description" content="Six built-in looks for the survey page your respondents see — editorial, charcoal, aurora, phosphor, dreamcloud, noir. Picked per deployment with BRAND_THEME." />
+
+  <!-- Social link preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.mcpsurveys.com/themes" />
+  <meta property="og:title" content="Six themes for your survey page — Agentic Survey MCP" />
+  <meta property="og:description" content="Editorial, charcoal, aurora, phosphor, dreamcloud, noir. Pick the look respondents see with one env var." />
+  <meta property="og:image" content="https://www.mcpsurveys.com/og" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Site chrome + every theme's real typeface, so the previews are faithful -->
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;1,400&family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Jost:wght@300;400;500;600&family=Nunito:wght@400;500;600;700&family=Outfit:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Quicksand:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #101113;
+      --surface: #16181b;
+      --border: #24272c;
+      --text: #e9e8e4;
+      --muted: #8c8d92;
+      --faint: #5b5d63;
+      --accent: #c98a5b;
+      --radius: 12px;
+      --maxw: 1100px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Hanken Grotesk', system-ui, sans-serif;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+    h1, h2, h3 { font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+    code, .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    a { color: inherit; }
+
+    /* nav */
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; }
+    .brand { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; text-decoration: none; }
+    .dot { width: 9px; height: 9px; border-radius: 2px; background: var(--accent); }
+    .nav-links { display: flex; gap: 24px; align-items: center; font-size: 0.92rem; }
+    .nav-links a { color: var(--muted); text-decoration: none; transition: color .15s; }
+    .nav-links a:hover { color: var(--text); }
+    @media (max-width: 620px) { .nav-links a:not(.gh) { display: none; } }
+
+    /* hero */
+    .hero { padding: 64px 0 30px; text-align: center; }
+    .eyebrow { font-family: 'JetBrains Mono'; font-size: 0.78rem; letter-spacing: 0.02em; color: var(--accent); margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(2.1rem, 5vw, 3.3rem); max-width: 16ch; margin: 0 auto; }
+    .hero p.lede { color: var(--muted); font-size: clamp(1.02rem, 2vw, 1.16rem); max-width: 56ch; margin: 20px auto 0; }
+    .hero .meta { margin-top: 22px; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--faint); }
+    .hero .meta b { color: var(--text); font-weight: 500; }
+
+    /* gallery */
+    .gallery { padding: 30px 0 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .frame {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+    }
+    .frame.is-new { border-color: #3a3340; }
+
+    .cap { display: flex; align-items: baseline; justify-content: space-between; gap: 0.7rem; padding: 16px 18px 0; }
+    .cap-l { display: flex; align-items: baseline; gap: 0.55rem; flex-wrap: wrap; }
+    .cap h2 { font-size: 1.05rem; font-weight: 700; }
+    .tag {
+      font-family: 'JetBrains Mono'; font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid #46372b; border-radius: 999px; padding: 0.2em 0.6em; white-space: nowrap;
+    }
+    .cap-meta { padding: 8px 18px 16px; }
+    .concept { font-size: 0.86rem; color: var(--muted); line-height: 1.5; }
+    .fonts { font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--faint); margin-top: 7px; }
+
+    /* the use-it strip */
+    .useit { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 18px 16px; }
+    .useit code { font-size: 0.76rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 6px 10px; }
+    .copy { background: var(--bg); border: 1px solid var(--border); color: var(--muted); font-family: 'JetBrains Mono'; font-size: 0.68rem; padding: 6px 10px; border-radius: 7px; cursor: pointer; transition: all .15s; white-space: nowrap; }
+    .copy:hover { color: var(--text); border-color: var(--accent); }
+
+    /* ── The stage: a faithful slice of the live page (real fonts + tokens). ──
+       Tokens mirror packages/page-service/app/globals.css exactly. */
+    .stage {
+      padding: 26px 22px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      --fs-title: 1.55rem; --fs-prompt: 1.02rem;
+      --pad-x: 1.4rem; --pad-y: 1.55rem;
+    }
+    .survey-card {
+      width: 100%;
+      background: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius2);
+      padding: var(--pad-y) var(--pad-x);
+      font-family: var(--font-sans);
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .kicker { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; color: hsl(var(--primary)); }
+    .survey-card h3 { font-family: var(--font-display); font-size: var(--fs-title); line-height: 1.12; letter-spacing: -0.01em; font-weight: 600; }
+    .desc { font-size: 0.85rem; line-height: 1.5; color: hsl(var(--muted-foreground)); }
+    .bar { display: flex; align-items: center; gap: 0.6rem; }
+    .track { height: 6px; flex: 1; border-radius: 999px; background: hsl(var(--secondary)); overflow: hidden; }
+    .fill { height: 100%; width: 33%; border-radius: 999px; background: hsl(var(--primary)); }
+    .count { font-family: var(--font-mono); font-size: 0.7rem; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+    .q { display: flex; flex-direction: column; gap: 0.55rem; padding-top: 0.2rem; }
+    .q-head { display: flex; gap: 0.55rem; align-items: baseline; }
+    .q-num { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; color: hsl(var(--primary)); }
+    .prompt { font-size: var(--fs-prompt); line-height: 1.3; font-weight: 500; }
+    .opts { display: flex; flex-direction: column; gap: 0.4rem; }
+    .opt { display: flex; align-items: center; gap: 0.6rem; border: 1px solid hsl(var(--input)); border-radius: calc(var(--radius2) - 3px); padding: 0.5rem 0.8rem; font-size: 0.88rem; }
+    .ddot { width: 15px; height: 15px; border-radius: 999px; border: 2px solid hsl(var(--muted-foreground)); flex: none; }
+    .opt.sel { border-color: hsl(var(--primary)); }
+    .opt.sel .ddot { border-color: hsl(var(--primary)); background: radial-gradient(circle at center, hsl(var(--primary)) 0 5px, transparent 5px); }
+    .field { border: 1px solid hsl(var(--input)); border-radius: calc(var(--radius2) - 3px); height: 2.5rem; display: flex; align-items: center; padding: 0 0.8rem; font-size: 0.84rem; color: hsl(var(--muted-foreground)); }
+    .submit { margin-top: 0.2rem; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border: none; border-radius: calc(var(--radius2) - 2px); height: 2.7rem; font-family: var(--font-sans); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.01em; cursor: pointer; }
+
+    /* ============================ THEME TOKENS ============================ */
+    .stage[data-theme='editorial'] {
+      --background: 39 44% 96%; --foreground: 24 14% 13%;
+      --card: 40 56% 99%; --card-foreground: 24 14% 13%;
+      --primary: 14 74% 46%; --primary-foreground: 40 60% 98%;
+      --secondary: 36 32% 91%; --muted-foreground: 26 9% 40%;
+      --border: 33 24% 84%; --input: 33 24% 82%; --radius2: 0.85rem;
+      --font-display: 'Fraunces', Georgia, serif; --font-sans: 'Hanken Grotesk', system-ui, sans-serif; --font-mono: 'Geist Mono', monospace;
+      background-color: hsl(39 44% 96%);
+      background-image:
+        radial-gradient(28rem 18rem at 50% -4rem, hsl(14 74% 46% / 0.1), transparent 60%),
+        radial-gradient(20rem 14rem at 100% 0%, hsl(28 60% 70% / 0.1), transparent 55%);
+    }
+
+    .stage[data-theme='charcoal'] {
+      --background: 225 14% 8%; --foreground: 220 16% 92%;
+      --card: 222 14% 11%; --card-foreground: 220 16% 92%;
+      --primary: 0 0% 96%; --primary-foreground: 224 16% 9%;
+      --secondary: 222 12% 16%; --muted-foreground: 220 8% 56%;
+      --border: 222 11% 20%; --input: 222 11% 24%; --radius2: 0.6rem;
+      --font-display: 'Geist', system-ui, sans-serif; --font-sans: 'Geist', system-ui, sans-serif; --font-mono: 'Geist Mono', monospace;
+      background-color: hsl(225 14% 8%);
+      background-image:
+        radial-gradient(26rem 18rem at 50% -3rem, hsl(0 0% 100% / 0.04), transparent 60%),
+        linear-gradient(hsl(222 11% 20% / 0.5) 1px, transparent 1px),
+        linear-gradient(90deg, hsl(222 11% 20% / 0.5) 1px, transparent 1px);
+      background-size: auto, 46px 46px, 46px 46px;
+    }
+    .stage[data-theme='charcoal'] .kicker, .stage[data-theme='charcoal'] .count { font-family: var(--font-mono); letter-spacing: 0.16em; }
+
+    .stage[data-theme='aurora'] {
+      --background: 244 60% 6%; --foreground: 230 40% 95%;
+      --card: 246 42% 13%; --card-foreground: 228 38% 96%;
+      --primary: 184 92% 56%; --primary-foreground: 244 70% 8%;
+      --secondary: 248 36% 20%; --muted-foreground: 234 22% 70%;
+      --border: 250 34% 28%; --input: 250 30% 30%; --radius2: 1.15rem;
+      --font-display: 'Space Grotesk', system-ui, sans-serif; --font-sans: 'Outfit', system-ui, sans-serif; --font-mono: 'JetBrains Mono', monospace;
+      background-image:
+        radial-gradient(26rem 20rem at 8% -6%, hsl(286 90% 58% / 0.40), transparent 60%),
+        radial-gradient(24rem 18rem at 100% 4%, hsl(190 95% 55% / 0.34), transparent 58%),
+        radial-gradient(30rem 22rem at 50% 120%, hsl(250 95% 62% / 0.38), transparent 62%),
+        linear-gradient(180deg, hsl(248 62% 8%), hsl(244 60% 5%));
+    }
+    .stage[data-theme='aurora'] .survey-card {
+      background-color: hsl(246 42% 13% / 0.55);
+      backdrop-filter: blur(22px) saturate(135%); -webkit-backdrop-filter: blur(22px) saturate(135%);
+      border: 1px solid hsl(250 60% 70% / 0.18);
+      box-shadow: 0 1px 0 hsl(0 0% 100% / 0.06) inset, 0 24px 70px -20px hsl(252 80% 4% / 0.85), 0 0 80px -30px hsl(190 95% 55% / 0.3);
+    }
+    .stage[data-theme='aurora'] .kicker { font-family: var(--font-mono); letter-spacing: 0.22em; color: hsl(184 92% 66%); text-shadow: 0 0 18px hsl(184 92% 56% / 0.55); }
+    .stage[data-theme='aurora'] .q-num { background: linear-gradient(135deg, hsl(190 95% 62%), hsl(276 90% 70%)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .stage[data-theme='aurora'] .submit { box-shadow: 0 0 28px -4px hsl(184 92% 56% / 0.55); }
+
+    .stage[data-theme='phosphor'] {
+      --background: 150 30% 4%; --foreground: 145 80% 72%;
+      --card: 150 26% 6%; --card-foreground: 145 80% 74%;
+      --primary: 142 90% 55%; --primary-foreground: 150 40% 4%;
+      --secondary: 150 24% 11%; --muted-foreground: 145 28% 52%;
+      --border: 145 45% 24%; --input: 145 45% 28%; --radius2: 0rem;
+      --font-display: 'IBM Plex Mono', monospace; --font-sans: 'IBM Plex Mono', monospace; --font-mono: 'IBM Plex Mono', monospace;
+      background-color: hsl(150 30% 4%);
+      background-image:
+        radial-gradient(30rem 22rem at 50% -6rem, hsl(142 90% 55% / 0.1), transparent 62%),
+        radial-gradient(120% 120% at 50% 50%, transparent 58%, hsl(150 40% 2% / 0.85) 100%),
+        repeating-linear-gradient(0deg, hsl(150 40% 0% / 0.32) 0px, hsl(150 40% 0% / 0.32) 1px, transparent 1px, transparent 3px);
+      background-size: auto, auto, 100% 3px;
+    }
+    .stage[data-theme='phosphor'] .kicker { letter-spacing: 0.28em; text-shadow: 0 0 6px hsl(142 90% 55% / 0.7); }
+    .stage[data-theme='phosphor'] .kicker::before { content: '> '; opacity: 0.85; }
+    .stage[data-theme='phosphor'] .kicker::after { content: '_'; margin-left: 0.15em; animation: blink 1.1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .stage[data-theme='phosphor'] h3 { text-transform: uppercase; letter-spacing: 0.02em; font-weight: 700; text-shadow: 0 0 9px hsl(142 88% 56% / 0.45), 0 0 2px hsl(142 88% 56% / 0.6); }
+    .stage[data-theme='phosphor'] .q-num { text-shadow: 0 0 5px hsl(142 90% 55% / 0.55); }
+
+    .stage[data-theme='dreamcloud'] {
+      --background: 273 56% 97%; --foreground: 263 32% 26%;
+      --card: 320 60% 99%; --card-foreground: 263 33% 24%;
+      --primary: 284 48% 52%; --primary-foreground: 300 100% 99%;
+      --secondary: 270 54% 93%; --muted-foreground: 264 16% 46%;
+      --border: 280 38% 88%; --input: 280 40% 85%; --radius2: 1.25rem;
+      --font-display: 'Quicksand', system-ui, sans-serif; --font-sans: 'Nunito', system-ui, sans-serif; --font-mono: 'Geist Mono', monospace;
+      background-image:
+        radial-gradient(26rem 18rem at 12% -6%, hsl(320 80% 90% / 0.55), transparent 60%),
+        radial-gradient(24rem 18rem at 92% 4%, hsl(255 80% 90% / 0.5), transparent 58%),
+        radial-gradient(28rem 22rem at 78% 106%, hsl(165 70% 86% / 0.42), transparent 60%),
+        radial-gradient(22rem 16rem at 30% 92%, hsl(284 78% 90% / 0.45), transparent 58%),
+        linear-gradient(180deg, hsl(273 56% 98%), hsl(280 50% 96%));
+    }
+    .stage[data-theme='dreamcloud'] .kicker { text-transform: lowercase; letter-spacing: 0.02em; font-weight: 700; }
+    .stage[data-theme='dreamcloud'] .survey-card { box-shadow: 0 1px 0 hsl(300 100% 100% / 0.9) inset, 0 20px 50px -24px hsl(284 50% 50% / 0.35), 0 6px 18px -12px hsl(255 60% 50% / 0.25); }
+
+    .stage[data-theme='noir'] {
+      --background: 158 32% 5%; --foreground: 44 38% 90%;
+      --card: 160 28% 8%; --card-foreground: 44 36% 91%;
+      --primary: 41 58% 62%; --primary-foreground: 158 40% 6%;
+      --secondary: 158 22% 13%; --muted-foreground: 42 16% 64%;
+      --border: 44 30% 24%; --input: 44 26% 30%; --radius2: 0.4rem;
+      --font-display: 'Playfair Display', Georgia, serif; --font-sans: 'Jost', system-ui, sans-serif; --font-mono: 'Geist Mono', monospace;
+      background-image:
+        radial-gradient(34rem 22rem at 50% -6rem, hsl(41 58% 62% / 0.1), transparent 62%),
+        radial-gradient(26rem 26rem at 100% 108%, hsl(158 40% 14% / 0.55), transparent 60%),
+        radial-gradient(120% 120% at 50% 50%, transparent 55%, hsl(158 40% 3% / 0.85) 100%);
+    }
+    .stage[data-theme='noir'] .kicker { letter-spacing: 0.34em; font-weight: 500; font-size: 0.66rem; }
+    .stage[data-theme='noir'] .q-num { font-style: italic; font-weight: 500; color: hsl(var(--primary) / 0.85); }
+
+    /* how-to section */
+    section { padding: 56px 0; border-top: 1px solid var(--border); }
+    .sec-label { font-family: 'JetBrains Mono'; font-size: 0.76rem; letter-spacing: 0.02em; color: var(--accent); margin-bottom: 12px; text-align: center; }
+    section h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); margin-bottom: 12px; text-align: center; }
+    .sec-intro { color: var(--muted); max-width: 62ch; margin: 0 auto; text-align: center; }
+    .howbox { margin: 30px auto 0; max-width: 640px; display: flex; flex-direction: column; gap: 18px; }
+    .howstep { display: flex; gap: 16px; }
+    .howstep .num { font-family: 'JetBrains Mono'; font-weight: 500; color: var(--accent); flex-shrink: 0; width: 22px; padding-top: 2px; }
+    .howstep .body { flex: 1; min-width: 0; }
+    .howstep h3 { font-size: 1.05rem; margin-bottom: 5px; }
+    .howstep p { color: var(--muted); font-size: 0.93rem; }
+    .codeblock { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 11px; }
+    .codeblock pre { padding: 14px 16px; padding-right: 56px; font-family: 'JetBrains Mono'; font-size: 0.8rem; line-height: 1.7; overflow-x: auto; color: var(--text); }
+    .codeblock .copy { position: absolute; top: 9px; right: 9px; }
+    .callout { margin: 26px auto 0; max-width: 640px; background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--accent); border-radius: 10px; padding: 16px 18px; color: var(--muted); font-size: 0.9rem; }
+    .callout b { color: var(--text); font-weight: 600; }
+
+    /* footer */
+    footer { border-top: 1px solid var(--border); padding: 40px 0 56px; }
+    .foot-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; align-items: flex-start; }
+    .foot-links { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+    .foot-links a { color: var(--muted); text-decoration: none; font-size: 0.92rem; transition: color .15s; }
+    .foot-links a:hover { color: var(--accent); }
+    .foot-note { color: var(--faint); font-size: 0.85rem; margin-top: 22px; }
+    .foot-note a { color: var(--muted); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .stage[data-theme='phosphor'] .kicker::after { animation: none; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="/"><span class="dot"></span> agentic-survey-mcp</a>
+      <div class="nav-links">
+        <a href="/#how">How it works</a>
+        <a href="/#quickstart">Quick start</a>
+        <a href="/themes">Themes</a>
+        <a class="gh" href="https://github.com/netmonty/agentic-survey-mcp">GitHub ↗</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">the respondent page · six looks</p>
+      <h1>Six ways to wear a survey.</h1>
+      <p class="lede">The page your respondents open can take on any of six built-in looks &mdash; not recolours, but distinct visual identities, from warm and editorial to a glowing CRT terminal. Your agent picks one per survey, just by being asked. Every card below is the real thing: real fonts, real colours, real spacing.</p>
+      <p class="meta">just tell your agent &mdash; <b>&ldquo;use the phosphor theme&rdquo;</b></p>
+    </header>
+
+    <div class="gallery">
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+  <section id="how">
+    <div class="wrap">
+      <p class="sec-label">how to choose one</p>
+      <h2>Just ask your agent</h2>
+      <p class="sec-intro">Theme is set per survey, and your agent handles it &mdash; mention a look when you build (or change it any time, even after publishing). It works on the hosted page and on your own, with nothing to configure.</p>
+      <div class="howbox">
+        <div class="howstep">
+          <div class="num">1</div>
+          <div class="body">
+            <h3>Name a theme when you build</h3>
+            <p>Say the look you want and the agent sets it on that survey &mdash; it's stored alongside the survey, so the link renders in that theme for everyone who opens it.</p>
+            <div class="codeblock">
+              <button class="copy" data-copy="Build a 4-question customer-satisfaction survey and use the Noir theme. Publish it and give me the link.">Copy</button>
+<pre>"Build a 4-question customer-satisfaction survey and
+ use the Noir theme. Publish it and give me the link."</pre>
+            </div>
+          </div>
+        </div>
+        <div class="howstep">
+          <div class="num">2</div>
+          <div class="body">
+            <h3>Change your mind any time</h3>
+            <p>Re-theme an existing survey in one line &mdash; it takes effect on the next page load, even for surveys you've already published and shared.</p>
+            <div class="codeblock">
+              <button class="copy" data-copy="Switch my product-feedback survey to the Phosphor theme.">Copy</button>
+<pre>"Switch my product-feedback survey to the Phosphor theme."</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="callout">
+        <b>Behind the scenes:</b> the agent uses the <code>set_survey_theme</code> tool (and <code>list_themes</code> to see the options), storing just the theme <i>name</i> on your survey &mdash; the styling lives in the page itself, never your data. Self-hosting? Set <code>BRAND_THEME</code> on your deployment to pick the default look for surveys that don't choose one.
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <a class="brand" href="/"><span class="dot"></span> agentic-survey-mcp</a>
+        <div class="foot-links">
+          <a href="https://github.com/netmonty">GitHub · @netmonty ↗</a>
+          <a href="https://www.linkedin.com/in/monty-daley">LinkedIn ↗</a>
+          <a href="https://montymakesthings.com">montymakesthings.com ↗</a>
+          <a href="mailto:monty@daley.org.nz">monty@daley.org.nz</a>
+        </div>
+      </div>
+      <p class="foot-note">MIT licensed and free. Built by <a href="https://montymakesthings.com">Monty</a>. Source on <a href="https://github.com/netmonty/agentic-survey-mcp">GitHub</a>.</p>
+    </div>
+  </footer>
+
+  <script>
+    var THEMES = [
+      { key: 'editorial', name: 'Editorial', concept: 'Warm paper, burnt-clay accent, a literary serif — calm and considered. The default.', fonts: 'Fraunces · Hanken Grotesk', isNew: false },
+      { key: 'charcoal', name: 'Charcoal', concept: 'Monochrome charcoal on a faint technical grid — compact and modern.', fonts: 'Geist Sans · Geist Mono', isNew: false },
+      { key: 'aurora', name: 'Aurora', concept: 'A violet-to-cyan aurora glowing behind frosted glass — futuristic, premium, alive.', fonts: 'Space Grotesk · Outfit · JetBrains Mono', isNew: true },
+      { key: 'phosphor', name: 'Phosphor', concept: 'A dead-black CRT console in P1 green — all mono, hard edges, scanlines, blinking cursor.', fonts: 'IBM Plex Mono', isNew: true },
+      { key: 'dreamcloud', name: 'Dreamcloud', concept: 'A pillowy lavender-and-blush daydream — soft, kind, and quietly delightful.', fonts: 'Quicksand · Nunito', isNew: true },
+      { key: 'noir', name: 'Noir Luxe', concept: 'Champagne gold pressed on emerald-black — refined, hushed, expensive.', fonts: 'Playfair Display · Jost', isNew: true }
+    ];
+
+    function card(key) {
+      return '' +
+      '<div class="stage" data-theme="' + key + '">' +
+        '<div class="survey-card">' +
+          '<p class="kicker">Survey</p>' +
+          '<h3>Team pulse check</h3>' +
+          '<p class="desc">Two quick questions — takes under a minute.</p>' +
+          '<div class="bar"><div class="track"><div class="fill"></div></div><span class="count">1/3</span></div>' +
+          '<div class="q"><div class="q-head"><span class="q-num">1</span><p class="prompt">How has your week been?</p></div>' +
+            '<div class="opts">' +
+              '<div class="opt sel"><span class="ddot"></span> Great, actually</div>' +
+              '<div class="opt"><span class="ddot"></span> Fine — nothing major</div>' +
+              '<div class="opt"><span class="ddot"></span> Pretty rough</div>' +
+            '</div></div>' +
+          '<div class="q"><div class="q-head"><span class="q-num">2</span><p class="prompt">Anything we should know?</p></div>' +
+            '<div class="field">Type your answer…</div></div>' +
+          '<button class="submit">Submit response</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    document.getElementById('grid').innerHTML = THEMES.map(function (t) {
+      return '' +
+      '<section class="frame ' + (t.isNew ? 'is-new' : '') + '">' +
+        '<div class="cap"><span class="cap-l"><h2>' + t.name + '</h2></span>' +
+          (t.isNew ? '<span class="tag">New</span>' : '') + '</div>' +
+        '<div class="cap-meta"><p class="concept">' + t.concept + '</p><p class="fonts">' + t.fonts + '</p></div>' +
+        '<div class="useit"><code>&ldquo;use ' + t.key + '&rdquo;</code>' +
+          '<button class="copy" data-copy="Use the ' + t.key + ' theme for this survey.">Copy prompt</button></div>' +
+        card(t.key) +
+      '</section>';
+    }).join('');
+
+    document.querySelectorAll('.copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        navigator.clipboard.writeText(btn.getAttribute('data-copy')).then(function () {
+          var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
