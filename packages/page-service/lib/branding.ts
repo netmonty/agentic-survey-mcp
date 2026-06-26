@@ -18,8 +18,8 @@ export function getBrand(): Brand {
 }
 
 /** Built-in visual themes. Selected deployment-wide via BRAND_THEME. */
-export type ThemeName = 'editorial' | 'charcoal';
-export const THEMES: ThemeName[] = ['editorial', 'charcoal'];
+export type ThemeName = 'editorial' | 'charcoal' | 'aurora' | 'phosphor' | 'dreamcloud' | 'noir';
+export const THEMES: ThemeName[] = ['editorial', 'charcoal', 'aurora', 'phosphor', 'dreamcloud', 'noir'];
 
 export function getTheme(): ThemeName {
   const t = (process.env.BRAND_THEME || '').toLowerCase();

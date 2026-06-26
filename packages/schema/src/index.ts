@@ -1,4 +1,5 @@
 export * from './types.js';
+export * from './themes.js';
 export { readInitialMigrationSql, readMigrationSql } from './migration.js';
 
 /** Path (relative to this package) of the initial schema migration SQL. */

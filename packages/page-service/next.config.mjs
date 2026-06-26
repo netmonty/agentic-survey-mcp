@@ -35,9 +35,12 @@ const BASELINE_HEADERS = [
 const nextConfig = {
   reactStrictMode: true,
   async rewrites() {
-    // Serve the static marketing landing at the domain root; surveys live at /s/...
+    // Serve the static marketing pages with clean URLs; surveys live at /s/...
     return {
-      beforeFiles: [{ source: '/', destination: '/landing.html' }],
+      beforeFiles: [
+        { source: '/', destination: '/landing.html' },
+        { source: '/themes', destination: '/themes.html' },
+      ],
     };
   },
   async headers() {

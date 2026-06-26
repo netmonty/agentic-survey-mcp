@@ -25,7 +25,7 @@ Full specs: [`docs/survey-mcp-build-brief.md`](docs/survey-mcp-build-brief.md),
 ```
 packages/schema        SQL migration (migrations/0001_init.sql) + shared TS types + get_results contract
 packages/core          pure service layer over an injected Supabase client; typed Result, never throws
-packages/mcp-server    MCP server (stdio) + `agentic-survey` CLI; 14 tools over core
+packages/mcp-server    MCP server (stdio) + `agentic-survey` CLI; 16 tools + themes resource over core
 packages/page-service  Next.js 16 + React 19 public page (render + collect); self-hostable
 docs/                  build brief, saas plan, trust model, spike findings
 examples/              claude_desktop_config.json, sample config, sample-survey prompts
@@ -35,7 +35,7 @@ examples/              claude_desktop_config.json, sample config, sample-survey 
 
 - ✅ **schema**: migration applied + verified; RLS proven (see spike findings).
 - ✅ **core**: all functions + `get_results` aggregation; integration tests pass.
-- ✅ **mcp-server**: 14 tools, CLI `init` (default cmd = serve the stdio server; `init` = setup), stdio smoke test passes.
+- ✅ **mcp-server**: 16 tools, CLI `init` (default cmd = serve the stdio server; `init` = setup), stdio smoke test passes.
 - ✅ **page-service**: Next 16 + shadcn UI, all 10 question types (incl. date/time/slider) + dropdown variant, two themes, themed number stepper; lib spike test passes.
 - ✅ **branching / skip logic**: `questions.logic` is typed (`QuestionLogic`); `set_question_logic` + `validate_survey` tools; a shared evaluator (`page-service/src/lib/logic.ts`) drives live show/hide and visibility-aware submission validation (hidden questions aren't required; answers to hidden questions are rejected). Conditions reference earlier questions only. DB-less unit tests in `logic.test.ts` / `lint.test.ts`.
 - ✅ **date / time / slider question types**: date (`YYYY-MM-DD`), time (24-hour `HH:MM`), slider (numeric, defaults 0–100 `%`). Slider aggregates as numeric; date/time as text. Fresh installs get them from the updated `0001_init.sql`; **existing deployments must run `migrations/0002_add_question_types.sql`** (it alters the `questions.type` check constraint).
@@ -69,7 +69,7 @@ write directly to the survey owner's Supabase. Deploy it to any Next-capable hos
 - project root set to `packages/page-service`, framework Next.js,
 - public access (no deployment protection — the survey page must be reachable by
   respondents),
-- optional env: `BRAND_THEME` (`editorial`|`charcoal`), `BRAND_NAME`, `BRAND_URL`,
+- optional env: `BRAND_THEME` (`editorial`|`charcoal`|`aurora`|`phosphor`|`dreamcloud`|`noir`), `BRAND_NAME`, `BRAND_URL`,
   `TURNSTILE_SECRET_KEY` + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`.
 
 The landing page is `packages/page-service/public/landing.html` (static), served at `/`
@@ -96,8 +96,24 @@ via a `next.config` rewrite. Edit it there and redeploy.
 - **page-service is self-contained**: it mirrors the few schema types locally
   (`src/lib/types.ts`) instead of importing `@agentic-survey/schema`, so it builds
   standalone as a deployable app. Keep these in sync with `packages/schema`.
-- **Themes**: two built-in, selected by `BRAND_THEME` env — `editorial` (warm paper +
-  Fraunces/Hanken + clay) and `charcoal` (monochrome charcoal/white + Geist + compact).
+- **Themes**: six built-in — `editorial` (warm paper +
+  Fraunces/Hanken + clay), `charcoal` (monochrome charcoal/white + Geist + compact),
+  `aurora` (violet→cyan glassmorphism, Space Grotesk/Outfit), `phosphor` (CRT terminal
+  green, all IBM Plex Mono, hard edges + scanlines), `dreamcloud` (pastel lavender/blush,
+  Quicksand/Nunito, pillowy) and `noir` (emerald-black + champagne gold, Playfair). Each
+  theme = a token block + body atmosphere + overrides in `globals.css`, registered in
+  `lib/branding.ts`, with fonts loaded in `app/layout.tsx`. Per-theme card styling hooks
+  the `.survey-card` class (kept unlayered to beat Tailwind utilities).
+- **Theme selection** (precedence: per-survey → deployment → default): the canonical
+  theme list + agent-facing catalog live in `packages/schema/src/themes.ts` (`THEME_NAMES`,
+  `THEME_CATALOG`, `DEFAULT_THEME`, `isThemeName`). A survey stores its chosen theme **name**
+  in `config.themeName` (jsonb — **no migration**); the CSS never leaves the page-service.
+  The agent sets it via `create_survey({themeName})` or `set_survey_theme`, and can discover
+  options via the `list_themes` tool or the `agentic-survey://themes` MCP resource. The
+  page-service applies it client-side in `survey-client.tsx` (the survey/key are client-only),
+  overriding the deployment-wide `BRAND_THEME` env; when unset it falls back to `BRAND_THEME`
+  then the default. The grain overlay is rendered always and CSS-gated to editorial so a
+  per-survey override is correct without a server round-trip.
 - **Runtime**: **Next 16 + React 19** (cleared the Next DoS advisories).
 
 ## Security posture (hosted page-service)

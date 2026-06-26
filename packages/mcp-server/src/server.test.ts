@@ -51,14 +51,56 @@ test('lists the full Phase 1 tool surface', { skip }, async () => {
     'get_survey',
     'list_responses',
     'list_surveys',
+    'list_themes',
     'publish_survey',
     'remove_question',
     'reorder_questions',
     'set_question_logic',
+    'set_survey_theme',
     'setup_connection',
     'update_question',
     'validate_survey',
   ]);
+});
+
+test('list_themes returns the six built-in themes + default', { skip }, async () => {
+  const s = structured(await client.callTool({ name: 'list_themes', arguments: {} }));
+  const names = s.themes.map((t: any) => t.name).sort();
+  assert.deepEqual(names, ['aurora', 'charcoal', 'dreamcloud', 'editorial', 'noir', 'phosphor']);
+  assert.equal(s.default, 'editorial');
+});
+
+test('exposes the themes catalog as a resource', { skip }, async () => {
+  const { resources } = await client.listResources();
+  const themes = resources.find((r) => r.name === 'themes');
+  assert.ok(themes, 'themes resource is registered');
+  const read = await client.readResource({ uri: themes!.uri });
+  const payload = JSON.parse((read.contents[0] as any).text);
+  assert.equal(payload.themes.length, 6);
+});
+
+test('create_survey with themeName, then set_survey_theme, persists in config', { skip }, async () => {
+  const created = structured(
+    await client.callTool({
+      name: 'create_survey',
+      arguments: { title: 'Themed survey', themeName: 'phosphor' },
+    }),
+  );
+  const surveyId = created.survey.id as string;
+  createdSurveyIds.push(surveyId);
+  assert.equal(created.survey.config.themeName, 'phosphor');
+
+  const changed = structured(
+    await client.callTool({
+      name: 'set_survey_theme',
+      arguments: { surveyId, themeName: 'noir' },
+    }),
+  );
+  assert.equal(changed.survey.config.themeName, 'noir');
+
+  // set_survey_theme must preserve other config keys it didn't touch.
+  const fetched = structured(await client.callTool({ name: 'get_survey', arguments: { surveyId } }));
+  assert.equal(fetched.survey.config.themeName, 'noir');
 });
 
 test('setup_connection reports connected + schema present', { skip }, async () => {

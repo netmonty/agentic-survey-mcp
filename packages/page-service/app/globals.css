@@ -75,6 +75,146 @@
     --pad-y: 1.6rem;
   }
 
+  /* ── Theme 3: Aurora — luminous violet→cyan glassmorphism, frosted card ── */
+  [data-theme='aurora'] {
+    --background: 244 60% 6%;
+    --foreground: 230 40% 95%;
+    --card: 246 42% 13%;
+    --card-foreground: 228 38% 96%;
+    --primary: 184 92% 56%;
+    --primary-foreground: 244 70% 8%;
+    --secondary: 248 36% 20%;
+    --secondary-foreground: 228 38% 94%;
+    --muted: 248 30% 17%;
+    --muted-foreground: 234 22% 70%;
+    --accent: 184 92% 56%;
+    --accent-foreground: 244 70% 8%;
+    --destructive: 348 90% 70%;
+    --destructive-foreground: 244 70% 8%;
+    --border: 250 34% 28%;
+    --input: 250 30% 30%;
+    --ring: 184 92% 56%;
+    --radius: 1.15rem;
+
+    --font-display: var(--font-space);
+    --font-sans: var(--font-outfit);
+    --font-mono: var(--font-jetmono);
+
+    --fs-title: 2rem;
+    --fs-title-sm: 2.55rem;
+    --fs-prompt: 1.2rem;
+    --h-ctl: 3rem;
+    --gap-q: 2.4rem;
+    --pad-x: 1.5rem;
+    --pad-x-sm: 2.6rem;
+    --pad-y: 2.4rem;
+  }
+
+  /* ── Theme 4: Phosphor — P1-green CRT terminal, all mono, hard edges ── */
+  [data-theme='phosphor'] {
+    --background: 150 30% 4%;
+    --foreground: 145 80% 72%;
+    --card: 150 26% 6%;
+    --card-foreground: 145 80% 74%;
+    --primary: 142 90% 55%;
+    --primary-foreground: 150 40% 4%;
+    --secondary: 150 24% 11%;
+    --secondary-foreground: 145 70% 70%;
+    --muted: 150 22% 9%;
+    --muted-foreground: 145 28% 52%;
+    --accent: 142 90% 55%;
+    --accent-foreground: 150 40% 4%;
+    --destructive: 6 95% 64%;
+    --destructive-foreground: 150 40% 4%;
+    --border: 145 45% 24%;
+    --input: 145 45% 28%;
+    --ring: 142 90% 55%;
+    --radius: 0rem;
+
+    --font-display: var(--font-plex-mono);
+    --font-sans: var(--font-plex-mono);
+    --font-mono: var(--font-plex-mono);
+
+    --fs-title: 1.5rem;
+    --fs-title-sm: 1.95rem;
+    --fs-prompt: 1.0625rem;
+    --h-ctl: 2.75rem;
+    --gap-q: 1.75rem;
+    --pad-x: 1.25rem;
+    --pad-x-sm: 1.85rem;
+    --pad-y: 1.75rem;
+  }
+
+  /* ── Theme 5: Dreamcloud — pillowy lavender + blush pastel, rounded, airy ── */
+  [data-theme='dreamcloud'] {
+    --background: 273 56% 97%;
+    --foreground: 263 32% 26%;
+    --card: 320 60% 99%;
+    --card-foreground: 263 33% 24%;
+    --primary: 284 48% 52%;
+    --primary-foreground: 300 100% 99%;
+    --secondary: 270 54% 93%;
+    --secondary-foreground: 263 30% 30%;
+    --muted: 276 40% 94%;
+    --muted-foreground: 264 16% 46%;
+    --accent: 284 48% 52%;
+    --accent-foreground: 300 100% 99%;
+    --destructive: 348 64% 47%;
+    --destructive-foreground: 320 100% 99%;
+    --border: 280 38% 88%;
+    --input: 280 40% 85%;
+    --ring: 284 60% 64%;
+    --radius: 1.25rem;
+
+    --font-display: var(--font-quicksand);
+    --font-sans: var(--font-nunito);
+    --font-mono: var(--font-geist-mono);
+
+    --fs-title: 2.1rem;
+    --fs-title-sm: 2.7rem;
+    --fs-prompt: 1.2rem;
+    --h-ctl: 3.1rem;
+    --gap-q: 2.6rem;
+    --pad-x: 1.6rem;
+    --pad-x-sm: 2.75rem;
+    --pad-y: 2.4rem;
+  }
+
+  /* ── Theme 6: Noir Luxe — emerald-black + champagne gold, Playfair serif ── */
+  [data-theme='noir'] {
+    --background: 158 32% 5%;
+    --foreground: 44 38% 90%;
+    --card: 160 28% 8%;
+    --card-foreground: 44 36% 91%;
+    --primary: 41 58% 62%;
+    --primary-foreground: 158 40% 6%;
+    --secondary: 158 22% 13%;
+    --secondary-foreground: 44 30% 86%;
+    --muted: 158 18% 12%;
+    --muted-foreground: 42 16% 64%;
+    --accent: 41 58% 62%;
+    --accent-foreground: 158 40% 6%;
+    --destructive: 6 64% 58%;
+    --destructive-foreground: 44 38% 94%;
+    --border: 44 30% 24%;
+    --input: 44 26% 30%;
+    --ring: 41 58% 62%;
+    --radius: 0.4rem;
+
+    --font-display: var(--font-playfair);
+    --font-sans: var(--font-jost);
+    --font-mono: var(--font-geist-mono);
+
+    --fs-title: 2.15rem;
+    --fs-title-sm: 3rem;
+    --fs-prompt: 1.2rem;
+    --h-ctl: 3.1rem;
+    --gap-q: 2.9rem;
+    --pad-x: 1.6rem;
+    --pad-x-sm: 3rem;
+    --pad-y: 2.6rem;
+  }
+
   * {
     @apply border-border;
   }
@@ -112,6 +252,10 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
+  /* The grain overlay is rendered for every theme but only shown under editorial. */
+  .grain-overlay { display: none; }
+  [data-theme='editorial'] .grain-overlay { display: block; }
+
   .q-num {
     font-family: var(--font-display), Georgia, serif;
   }
@@ -147,4 +291,179 @@
   .animate-fade-up {
     animation: fade-up 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Theme atmospheres + per-theme overrides (themes 3–6).
+   Kept UNLAYERED on purpose: these must win over Tailwind's utility layer
+   (e.g. .survey-card over .bg-card, submit button shadows over button utils).
+   Each rule is [data-theme='…']-scoped, so only the active theme is affected.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Aurora: luminous gradient ground + genuinely frosted glass card ── */
+[data-theme='aurora'] body {
+  background-attachment: fixed;
+  background-image:
+    radial-gradient(46rem 34rem at 8% -6%, hsl(286 90% 58% / 0.40), transparent 60%),
+    radial-gradient(42rem 32rem at 100% 4%, hsl(190 95% 55% / 0.34), transparent 58%),
+    radial-gradient(56rem 40rem at 50% 116%, hsl(250 95% 62% / 0.38), transparent 62%),
+    linear-gradient(180deg, hsl(248 62% 8%), hsl(244 60% 5%));
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+}
+[data-theme='aurora'] .survey-card {
+  background-color: hsl(246 42% 13% / 0.55);
+  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  border: 1px solid hsl(250 60% 70% / 0.18);
+  box-shadow:
+    0 1px 0 hsl(0 0% 100% / 0.06) inset,
+    0 24px 70px -20px hsl(252 80% 4% / 0.85),
+    0 0 80px -30px hsl(190 95% 55% / 0.30);
+}
+[data-theme='aurora'] .kicker {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: hsl(184 92% 66%);
+  text-shadow: 0 0 18px hsl(184 92% 56% / 0.55);
+}
+[data-theme='aurora'] .q-num {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  background: linear-gradient(135deg, hsl(190 95% 62%), hsl(276 90% 70%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+[data-theme='aurora'] button[type='submit'] {
+  box-shadow: 0 0 28px -4px hsl(184 92% 56% / 0.55);
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+[data-theme='aurora'] ::selection {
+  background: hsl(184 92% 56% / 0.30);
+  color: hsl(230 40% 97%);
+}
+
+/* ── Phosphor: CRT bloom + vignette + scanlines, glowing mono text ── */
+[data-theme='phosphor'] body {
+  background-color: hsl(150 30% 4%);
+  background-image:
+    radial-gradient(60rem 42rem at 50% -10rem, hsl(142 90% 55% / 0.10), transparent 62%),
+    radial-gradient(120% 120% at 50% 50%, transparent 58%, hsl(150 40% 2% / 0.85) 100%),
+    repeating-linear-gradient(0deg, hsl(150 40% 0% / 0.32) 0px, hsl(150 40% 0% / 0.32) 1px, transparent 1px, transparent 3px);
+  background-size: auto, auto, 100% 3px;
+  background-attachment: fixed;
+}
+[data-theme='phosphor'] .kicker {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-weight: 600;
+  text-shadow: 0 0 6px hsl(142 90% 55% / 0.7);
+}
+[data-theme='phosphor'] .kicker::before {
+  content: '> ';
+  opacity: 0.85;
+}
+[data-theme='phosphor'] .kicker::after {
+  content: '_';
+  margin-left: 0.15em;
+  animation: phosphor-blink 1.1s steps(1) infinite;
+}
+@keyframes phosphor-blink {
+  50% { opacity: 0; }
+}
+[data-theme='phosphor'] .q-num {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 5px hsl(142 90% 55% / 0.55);
+}
+[data-theme='phosphor'] h1,
+[data-theme='phosphor'] h2,
+[data-theme='phosphor'] h3 {
+  font-family: var(--font-display), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+  text-shadow: 0 0 9px hsl(142 88% 56% / 0.45), 0 0 2px hsl(142 88% 56% / 0.6);
+}
+[data-theme='phosphor'] ::selection {
+  background: hsl(142 90% 55% / 0.35);
+  color: hsl(145 90% 88%);
+}
+
+/* ── Dreamcloud: four pastel blobs over a lavender wash + pillowy card ── */
+[data-theme='dreamcloud'] body {
+  background-attachment: fixed;
+  background-image:
+    radial-gradient(46rem 34rem at 12% -6%, hsl(320 80% 90% / 0.55), transparent 60%),
+    radial-gradient(42rem 32rem at 92% 4%, hsl(255 80% 90% / 0.5), transparent 58%),
+    radial-gradient(50rem 40rem at 78% 102%, hsl(165 70% 86% / 0.42), transparent 60%),
+    radial-gradient(38rem 30rem at 30% 88%, hsl(284 78% 90% / 0.45), transparent 58%),
+    linear-gradient(180deg, hsl(273 56% 98%), hsl(280 50% 96%));
+  background-size: cover;
+}
+[data-theme='dreamcloud'] .kicker {
+  font-family: var(--font-display), ui-rounded, sans-serif;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+}
+[data-theme='dreamcloud'] .q-num {
+  font-family: var(--font-display), ui-rounded, sans-serif;
+  font-weight: 700;
+  color: hsl(var(--primary));
+}
+[data-theme='dreamcloud'] h1,
+[data-theme='dreamcloud'] h2,
+[data-theme='dreamcloud'] h3 {
+  font-family: var(--font-display), ui-rounded, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+[data-theme='dreamcloud'] .survey-card {
+  box-shadow:
+    0 1px 0 hsl(300 100% 100% / 0.9) inset,
+    0 20px 50px -24px hsl(284 50% 50% / 0.35),
+    0 6px 18px -12px hsl(255 60% 50% / 0.25);
+}
+[data-theme='dreamcloud'] ::selection {
+  background: hsl(284 70% 86% / 0.8);
+  color: hsl(263 40% 22%);
+}
+
+/* ── Noir Luxe: gold halo + emerald pool + vignette, engraved gold details ── */
+[data-theme='noir'] body {
+  background-image:
+    radial-gradient(70rem 44rem at 50% -10rem, hsl(41 58% 62% / 0.10), transparent 62%),
+    radial-gradient(50rem 50rem at 100% 105%, hsl(158 40% 14% / 0.55), transparent 60%),
+    radial-gradient(120% 120% at 50% 50%, transparent 55%, hsl(158 40% 3% / 0.85) 100%);
+  background-attachment: fixed;
+}
+[data-theme='noir'] .kicker {
+  font-family: var(--font-sans), ui-sans-serif, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.34em;
+  font-weight: 500;
+  font-size: 0.72rem;
+  color: hsl(var(--primary));
+}
+[data-theme='noir'] .q-num {
+  font-family: var(--font-display), Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  color: hsl(var(--primary) / 0.85);
+}
+[data-theme='noir'] h1,
+[data-theme='noir'] h2,
+[data-theme='noir'] h3 {
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+[data-theme='noir'] ::selection {
+  background: hsl(41 58% 62% / 0.28);
+  color: hsl(44 40% 96%);
 }
