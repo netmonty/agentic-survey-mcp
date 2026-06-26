@@ -61,7 +61,7 @@ export function SurveyClient({ params }: { params: Promise<{ ref: string; survey
 
 function Centered({ children }: { children: React.ReactNode }) {
   return (
-    <div className="animate-fade-up rounded-2xl border border-border bg-card px-8 py-16 text-center text-muted-foreground shadow-card">
+    <div className="survey-card animate-fade-up rounded-2xl border border-border bg-card px-8 py-16 text-center text-muted-foreground shadow-card">
       {children}
     </div>
   );

@@ -71,7 +71,7 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
 
   if (done) {
     return (
-      <div className="animate-fade-up rounded-2xl border border-border bg-card px-8 py-16 text-center shadow-card">
+      <div className="survey-card animate-fade-up rounded-2xl border border-border bg-card px-8 py-16 text-center shadow-card">
         <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
           <Check className="h-7 w-7 text-primary" strokeWidth={2.5} />
         </div>
@@ -86,7 +86,7 @@ export function SurveyForm({ projectRef, publishableKey, survey, questions }: Pr
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-card shadow-card">
+    <div className="survey-card rounded-2xl border border-border bg-card shadow-card">
       {/* header */}
       <header className="animate-fade-up space-y-4 px-[var(--pad-x)] pt-[var(--pad-y)] sm:px-[var(--pad-x-sm)]">
         <p className="kicker text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">Survey</p>

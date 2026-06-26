@@ -69,7 +69,7 @@ write directly to the survey owner's Supabase. Deploy it to any Next-capable hos
 - project root set to `packages/page-service`, framework Next.js,
 - public access (no deployment protection — the survey page must be reachable by
   respondents),
-- optional env: `BRAND_THEME` (`editorial`|`charcoal`), `BRAND_NAME`, `BRAND_URL`,
+- optional env: `BRAND_THEME` (`editorial`|`charcoal`|`aurora`|`phosphor`|`dreamcloud`|`noir`), `BRAND_NAME`, `BRAND_URL`,
   `TURNSTILE_SECRET_KEY` + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`.
 
 The landing page is `packages/page-service/public/landing.html` (static), served at `/`
@@ -96,8 +96,14 @@ via a `next.config` rewrite. Edit it there and redeploy.
 - **page-service is self-contained**: it mirrors the few schema types locally
   (`src/lib/types.ts`) instead of importing `@agentic-survey/schema`, so it builds
   standalone as a deployable app. Keep these in sync with `packages/schema`.
-- **Themes**: two built-in, selected by `BRAND_THEME` env — `editorial` (warm paper +
-  Fraunces/Hanken + clay) and `charcoal` (monochrome charcoal/white + Geist + compact).
+- **Themes**: six built-in, selected by `BRAND_THEME` env — `editorial` (warm paper +
+  Fraunces/Hanken + clay), `charcoal` (monochrome charcoal/white + Geist + compact),
+  `aurora` (violet→cyan glassmorphism, Space Grotesk/Outfit), `phosphor` (CRT terminal
+  green, all IBM Plex Mono, hard edges + scanlines), `dreamcloud` (pastel lavender/blush,
+  Quicksand/Nunito, pillowy) and `noir` (emerald-black + champagne gold, Playfair). Each
+  theme = a token block + body atmosphere + overrides in `globals.css`, registered in
+  `lib/branding.ts`, with fonts loaded in `app/layout.tsx`. Per-theme card styling hooks
+  the `.survey-card` class (kept unlayered to beat Tailwind utilities).
 - **Runtime**: **Next 16 + React 19** (cleared the Next DoS advisories).
 
 ## Security posture (hosted page-service)
