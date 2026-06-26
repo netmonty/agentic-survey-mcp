@@ -20,7 +20,13 @@ import {
   type Db,
   type LinkConfig,
 } from '@agentic-survey/core';
-import { readInitialMigrationSql } from '@agentic-survey/schema';
+import {
+  readInitialMigrationSql,
+  THEME_NAMES,
+  THEME_CATALOG,
+  DEFAULT_THEME,
+  type ThemeName,
+} from '@agentic-survey/schema';
 import {
   loadConfig,
   isConnectable,
@@ -43,6 +49,7 @@ const QUESTION_TYPE = z.enum([
   'slider',
 ]);
 const SURVEY_STATUS = z.enum(['draft', 'published', 'closed']);
+const THEME_NAME = z.enum(THEME_NAMES as unknown as [ThemeName, ...ThemeName[]]);
 
 const LOGIC_CONDITION = z.object({
   questionId: z.string().describe('An EARLIER question (lower position) whose answer is tested.'),
@@ -159,18 +166,70 @@ export function buildServer(): McpServer {
       title: 'Create a draft survey',
       description:
         'Create a new draft survey. Returns its id. Typical flow: create_survey → add_question (×N) → ' +
-        'publish_survey → get_share_link.',
+        'publish_survey → get_share_link. Optionally set the page theme now with `themeName` (or later ' +
+        'with set_survey_theme; call list_themes to see the options).',
       inputSchema: {
         title: z.string().min(1).describe('Survey title'),
         description: z.string().optional().describe('Optional description'),
+        themeName: THEME_NAME.optional().describe(
+          'Visual theme for the public survey page: editorial (default) · charcoal · aurora · phosphor · ' +
+            'dreamcloud · noir. See list_themes for what each looks like.',
+        ),
       },
     },
-    async ({ title, description }) => {
+    async ({ title, description, themeName }) => {
       const c = getConn();
       if (!c.ok) return c.res;
-      const r = await createSurvey(c.db, { title, description });
+      const r = await createSurvey(c.db, {
+        title,
+        description,
+        config: themeName ? { themeName } : undefined,
+      });
       if (isErr(r)) return fail(r.error.code, r.error.message);
       return ok(`Created draft survey "${r.data.title}" (id ${r.data.id}).`, { survey: r.data });
+    },
+  );
+
+  server.registerTool(
+    'list_themes',
+    {
+      title: 'List the available survey-page themes',
+      description:
+        'Return the built-in visual themes a survey page can use, with a description of each, plus the ' +
+        'default. The theme is the look respondents see; set it with create_survey or set_survey_theme. ' +
+        'The CSS lives in the page-service renderer — a survey only stores the chosen theme name.',
+      inputSchema: {},
+      annotations: { readOnlyHint: true },
+    },
+    async () =>
+      ok(`${THEME_CATALOG.length} themes available (default: ${DEFAULT_THEME}).`, {
+        themes: THEME_CATALOG,
+        default: DEFAULT_THEME,
+      }),
+  );
+
+  server.registerTool(
+    'set_survey_theme',
+    {
+      title: 'Set a survey’s page theme',
+      description:
+        'Set which built-in theme the survey’s public page renders in (e.g. "use phosphor"). Takes effect ' +
+        'on the next page load — including for already-published surveys. Preserves the survey’s other ' +
+        'config. Call list_themes for the options.',
+      inputSchema: {
+        surveyId: z.string(),
+        themeName: THEME_NAME.describe('One of: editorial · charcoal · aurora · phosphor · dreamcloud · noir.'),
+      },
+    },
+    async ({ surveyId, themeName }) => {
+      const c = getConn();
+      if (!c.ok) return c.res;
+      const cur = await getSurvey(c.db, surveyId);
+      if (isErr(cur)) return fail(cur.error.code, cur.error.message);
+      const config = { ...cur.data.survey.config, themeName };
+      const r = await updateSurvey(c.db, surveyId, { config });
+      if (isErr(r)) return fail(r.error.code, r.error.message);
+      return ok(`Theme set to "${themeName}" for "${r.data.title}".`, { survey: r.data });
     },
   );
 
@@ -456,6 +515,30 @@ export function buildServer(): McpServer {
         r.data as unknown as Record<string, unknown>,
       );
     },
+  );
+
+  // The theme catalog as a readable MCP resource, so a client can fetch the
+  // list of looks directly. It's metadata only — names + descriptions; the
+  // theme CSS lives in the page-service renderer, never here.
+  server.registerResource(
+    'themes',
+    'agentic-survey://themes',
+    {
+      title: 'Survey page themes',
+      description:
+        'The built-in visual themes a survey page can use. Set a survey’s theme with create_survey or ' +
+        'set_survey_theme.',
+      mimeType: 'application/json',
+    },
+    async (uri) => ({
+      contents: [
+        {
+          uri: uri.href,
+          mimeType: 'application/json',
+          text: JSON.stringify({ default: DEFAULT_THEME, themes: THEME_CATALOG }, null, 2),
+        },
+      ],
+    }),
   );
 
   return server;

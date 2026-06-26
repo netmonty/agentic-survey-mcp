@@ -2,6 +2,7 @@
 import { use, useEffect, useState } from 'react';
 import { createPublicClient, urlFromRef, isValidProjectRef, fetchPublishedSurvey, type PublicSurvey } from '@data';
 import { SurveyForm } from '@/components/survey-form';
+import { THEMES } from '@/lib/branding';
 
 type State = 'loading' | 'nokey' | 'notfound' | 'ready';
 
@@ -32,6 +33,13 @@ export function SurveyClient({ params }: { params: Promise<{ ref: string; survey
         if (!res) {
           setState('notfound');
           return;
+        }
+        // Per-survey theme: the survey carries its chosen theme name in its
+        // config; apply it to <html> (overriding the deployment's BRAND_THEME
+        // default). The CSS for every theme already ships in globals.css.
+        const themeName = res.survey.config?.themeName;
+        if (typeof themeName === 'string' && (THEMES as string[]).includes(themeName)) {
+          document.documentElement.setAttribute('data-theme', themeName);
         }
         setData(res);
         setState('ready');

@@ -116,9 +116,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${fraunces.variable} ${hanken.variable} ${GeistSans.variable} ${GeistMono.variable} ${themeFontVars}`}
     >
       <body className="relative min-h-dvh">
-        {theme === 'editorial' && (
-          <div aria-hidden className="grain pointer-events-none fixed inset-0 -z-10 opacity-[0.035]" />
-        )}
+        {/* Editorial film-grain. Always rendered but CSS-gated to the editorial
+            theme, so a per-survey theme override (set client-side) shows/hides it
+            correctly without a server round-trip. */}
+        <div aria-hidden className="grain grain-overlay pointer-events-none fixed inset-0 -z-10 opacity-[0.035]" />
         <main className="container flex min-h-dvh flex-col justify-center py-10 sm:py-16">
           {children}
         </main>

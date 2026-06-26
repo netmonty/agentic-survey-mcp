@@ -5,6 +5,8 @@
  * shares one definition. Keep this file framework-free.
  */
 
+import type { ThemeName } from './themes.js';
+
 // ---------------------------------------------------------------------------
 // Enums / unions
 // ---------------------------------------------------------------------------
@@ -147,8 +149,15 @@ export interface QuestionLogic {
   conditions: LogicCondition[];
 }
 
-/** Survey-level branding/settings (stored in surveys.config jsonb). One theme for v1. */
+/** Survey-level branding/settings (stored in surveys.config jsonb). */
 export interface SurveyConfig {
+  /**
+   * Which built-in page-service theme this survey renders in. When unset, the
+   * page-service falls back to its deployment-wide `BRAND_THEME`, then to the
+   * default. The CSS lives in the page-service; this is only the name.
+   */
+  themeName?: ThemeName;
+  /** Per-survey branding overrides (logo/colour/font), independent of `themeName`. */
   theme?: {
     brandColor?: string;
     logoUrl?: string;
